@@ -4,7 +4,10 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "dev:api": "turbo dev --filter=@repo/api",
+    "typecheck": "turbo typecheck",
+    "dev:web": "turbo dev --filter=@repo/web"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
