@@ -1,0 +1,8 @@
+{
+  "extends": "@repo/typescript-config/react.json",
+  "include": ["."],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
+}

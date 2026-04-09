@@ -1,0 +1,14 @@
+{
+  "extends": "@repo/typescript-config/react.json",
+  "include": ["src"],
+  "files": [],
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["vite/client"],
+    "paths": {
+      "@repo/types": [
+        "../../packages/types/src/index.ts"
+      ]
+    }
+  }
+}
