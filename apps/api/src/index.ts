@@ -4,6 +4,7 @@ import { Elysia } from "elysia";
 import { healthRoutes } from "./routes/health";
 import { workspaceRoutes } from "./routes/workspaces";
 import { prRoutes } from "./routes/pull-requests";
+import { syncRoutes } from "./routes/sync";
 
 const app = new Elysia()
   .use(cors({
@@ -11,17 +12,18 @@ const app = new Elysia()
     credentials: true
   }))
   .use(openapi({
-      documentation: {
-        info: {
-          title: "SprintBoard API",
-          version: "0.0.1"
-        }
+    documentation: {
+      info: {
+        title: "SprintBoard API",
+        version: "0.0.1"
       }
-    })
+    }
+  })
   )
   .use(healthRoutes)
   .use(workspaceRoutes)
   .use(prRoutes)
+  .use(syncRoutes)
   .onError(({ error, code, set }) => {
     if (code !== "NOT_FOUND") {
       console.error(`[${code}]`, error);
@@ -30,12 +32,8 @@ const app = new Elysia()
     set.status = code === "NOT_FOUND" ? 404 : 500;
     return {
       success: false as const,
-      error:
-        code === "NOT_FOUND"
-          ? "Route not found"
-          : error instanceof Error
-            ? error.message
-            : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
+
     };
   })
   .listen(3000);

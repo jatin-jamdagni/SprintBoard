@@ -8,8 +8,8 @@ const [workspace] = await db
   .insert(workspaces)
   .values({
     name: "SprintBoard Dev",
-    githubOrg: "your-org",
-    githubRepo: "your-repo",
+    githubOrg: "facebook",
+    githubRepo: "react",
   })
   .returning();
 

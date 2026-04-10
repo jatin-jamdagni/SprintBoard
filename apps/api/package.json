@@ -12,7 +12,9 @@
     "@elysiajs/openapi": "^1.4.14",
     "@repo/types": "workspace:*",
     "elysia": "latest",
-    "@repo/db": "workspace:*"
+    "@repo/db": "workspace:*",
+    "@repo/github": "workspace:*"
+
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
