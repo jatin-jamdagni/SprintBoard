@@ -2,24 +2,23 @@
   "name": "@repo/api",
   "version": "1.0.50",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts",
+    "dev": "bun --env-file=../../.env run --hot src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target bun",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src"
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.1",
-    "@elysiajs/openapi": "^1.4.14", 
+    "@elysiajs/openapi": "^1.4.14",
     "@repo/types": "workspace:*",
     "elysia": "latest",
     "@repo/db": "workspace:*"
-
   },
   "devDependencies": {
-    "bun-types": "latest",
+    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@repo/eslint-config": "workspace:*"
+    "@types/node": "^25.6.0",
+    "bun-types": "latest"
   },
   "module": "src/index.js"
 }

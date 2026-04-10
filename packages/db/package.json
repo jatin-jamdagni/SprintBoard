@@ -6,11 +6,12 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "type-check": "tsc --noEmit",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "bun run src/migrate.ts",
-    "db:seed": "bun run src/seed.ts",
-    "db:studio": "drizzle-kit studio"
+    "dev": "echo 'db: no dev server'",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "bun --env-file=../../.env drizzle-kit generate",
+    "db:migrate": "bun --env-file=../../.env run src/migrate.ts",
+    "db:seed": "bun --env-file=../../.env run src/seed.ts",
+    "db:studio": "bun --env-file=../../.env drizzle-kit studio"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

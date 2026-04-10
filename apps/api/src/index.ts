@@ -23,18 +23,26 @@ const app = new Elysia()
   .use(workspaceRoutes)
   .use(prRoutes)
   .onError(({ error, code, set }) => {
-    console.error(`[${code}]`, error);
+    if (code !== "NOT_FOUND") {
+      console.error(`[${code}]`, error);
+    }
+
     set.status = code === "NOT_FOUND" ? 404 : 500;
     return {
       success: false as const,
-      error: error instanceof Error ? error.message : "Unknown error"
+      error:
+        code === "NOT_FOUND"
+          ? "Route not found"
+          : error instanceof Error
+            ? error.message
+            : "Unknown error"
     };
   })
   .listen(3000);
 
 
 console.log(`🚀 API → http://localhost:${app.server?.port}`);
-console.log(`📖 Docs → http://localhost:${app.server?.port}/swagger`);
+console.log(`📖 Docs → http://localhost:${app.server?.port}/openapi`);
 
 
 export type App = typeof app;
