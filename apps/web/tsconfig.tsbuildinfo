@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/routetree.gen.ts","./src/vite-env.d.ts","./src/routes/__root.tsx","./src/routes/index.tsx"],"version":"6.0.2"}
+{"root":["./src/main.tsx","./src/routetree.gen.ts","./src/vite-env.d.ts","./src/components/pr-card.tsx","./src/components/pr-list-skeleton.tsx","./src/components/review-lag-dot.tsx","./src/components/stat-card.tsx","./src/components/status-badge.tsx","./src/lib/query-client.ts","./src/routes/__root.tsx","./src/routes/index.tsx","./src/routes/standup.tsx"],"errors":true,"version":"6.0.2"}

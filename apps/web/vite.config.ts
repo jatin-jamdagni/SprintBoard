@@ -7,22 +7,24 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-     tanstackRouter({
+    tanstackRouter({
       target: 'react',
       autoCodeSplitting: true,
     }),
     tailwindcss(),
     react()
   ],
-  resolve:{
+  resolve: {
     alias: {
-      "@repo/types": path.resolve(__dirname, "../../packages/types/src/index.ts")
+      "@repo/types": path.resolve(__dirname, "../../packages/types/src/index.ts"),
+      "@repo/api-client": path.resolve(__dirname, "../../packages/api-client/src/index.ts"),
+
     }
   },
-  server:{
+  server: {
     port: 5173,
     proxy: {
-      "/api":{
+      "/api": {
         target: "http://localhost:3000", changeOrigin: true
       }
     }
