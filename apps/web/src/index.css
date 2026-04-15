@@ -1,131 +1,185 @@
 @import "tailwindcss";
+/* @import "tw-animate-css"; */
 
-@theme {
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   TAILWIND THEME — Maps CSS vars to Tailwind utility classes
+   ============================================================ */
+
+@theme inline {
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "Fira Code", monospace;
-  --color-white: var(--surface-card);
-  --color-neutral-50: var(--surface-page);
-  --color-neutral-100: var(--surface-subtle);
-  --color-neutral-200: var(--border-default);
-  --color-neutral-300: var(--border-strong);
-  --color-neutral-400: var(--text-subtle);
-  --color-neutral-500: var(--text-muted);
-  --color-neutral-600: var(--text-secondary);
-  --color-neutral-700: var(--text-secondary);
-  --color-neutral-800: var(--surface-subtle);
-  --color-neutral-900: var(--text-primary);
-  --color-neutral-950: var(--surface-page);
-  --color-violet-50: var(--status-merged-bg);
-  --color-violet-300: var(--status-merged-text);
-  --color-violet-700: var(--status-merged-text);
-  --color-violet-950: var(--status-merged-bg);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  /* Surfaces */
+  --color-surface-page: var(--surface-page);
+  --color-surface-card: var(--surface-card);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-muted: var(--surface-muted);
+
+  /* Text */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+  --color-text-disabled: var(--text-disabled);
+  --color-text-on-brand: var(--text-on-brand);
+  --color-text-link: var(--text-link);
+
+  /* Brand */
+  --color-brand: var(--brand-primary);
+  --color-brand-hover: var(--brand-primary-hover);
+  --color-brand-light: var(--brand-primary-light);
+
+  /* Borders */
+  --color-border-default: var(--border-default);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-border-focus: var(--border-focus);
+
+  /* Status */
+  --color-status-success-bg: var(--status-success-bg);
+  --color-status-success-text: var(--status-success-text);
+  --color-status-success-border: var(--status-success-border);
+  --color-status-success-dot: var(--status-success-dot);
+  --color-status-warning-bg: var(--status-warning-bg);
+  --color-status-warning-text: var(--status-warning-text);
+  --color-status-warning-border: var(--status-warning-border);
+  --color-status-warning-dot: var(--status-warning-dot);
+  --color-status-danger-bg: var(--status-danger-bg);
+  --color-status-danger-text: var(--status-danger-text);
+  --color-status-danger-border: var(--status-danger-border);
+  --color-status-danger-dot: var(--status-danger-dot);
+  --color-status-info-bg: var(--status-info-bg);
+  --color-status-info-text: var(--status-info-text);
+  --color-status-info-border: var(--status-info-border);
+  --color-status-draft-bg: var(--status-draft-bg);
+  --color-status-draft-text: var(--status-draft-text);
+  --color-status-draft-border: var(--status-draft-border);
+  --color-status-merged-bg: var(--status-merged-bg);
+  --color-status-merged-text: var(--status-merged-text);
+  --color-status-merged-border: var(--status-merged-border);
+
+  /* Lag */
+  --color-lag-good: var(--lag-good);
+  --color-lag-warn: var(--lag-warn);
+  --color-lag-crit: var(--lag-crit);
+
+  /* Nav */
+  --color-nav-bg: var(--nav-bg);
+  --color-nav-border: var(--nav-border);
+  --color-nav-text: var(--nav-text);
+  --color-nav-text-active: var(--nav-text-active);
+  --color-nav-active-bg: var(--nav-active-bg);
+
+  /* Chart */
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-axis: var(--chart-axis);
+  --color-chart-bar-primary: var(--chart-bar-primary);
+  --color-chart-bar-secondary: var(--chart-bar-secondary);
+
+  /* Shadcn compat */
+  --color-background: var(--surface-page);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--surface-card);
+  --color-card-foreground: var(--text-primary);
+  --color-popover: var(--surface-card);
+  --color-popover-foreground: var(--text-primary);
+  --color-primary: var(--brand-primary);
+  --color-primary-foreground: var(--text-on-brand);
+  --color-secondary: var(--surface-subtle);
+  --color-secondary-foreground: var(--text-secondary);
+  --color-muted: var(--surface-muted);
+  --color-muted-foreground: var(--text-muted);
+  --color-accent: var(--surface-subtle);
+  --color-accent-foreground: var(--text-primary);
+  --color-destructive: var(--status-danger-dot);
+  --color-destructive-foreground: var(--text-on-brand);
+  --color-border: var(--border-default);
+  --color-input: var(--border-default);
+  --color-ring: var(--border-focus);
 }
 
 /* ============================================================
-   DESIGN TOKENS
-   All colors, radii, shadows, and spacing in one place.
-   Import this file once in main.tsx — never hardcode values.
+   DESIGN TOKENS — Light mode
    ============================================================ */
 
 :root {
-  /* ----------------------------------------------------------
-     Brand
-  ---------------------------------------------------------- */
-  --brand-primary:        #6366f1;   /* indigo-500  — buttons, active states     */
-  --brand-primary-hover:  #4f46e5;   /* indigo-600  — hover                      */
-  --brand-primary-light:  #eef2ff;   /* indigo-50   — light bg tint              */
-  --brand-primary-dark:   #3730a3;   /* indigo-800  — dark mode accent           */
+  --radius: 0.625rem;
 
-  /* ----------------------------------------------------------
-     Neutral surface scale (light mode)
-     Used for backgrounds, cards, borders.
-  ---------------------------------------------------------- */
-  --surface-page:         #f9fafb;   /* neutral-50  — page background            */
-  --surface-card:         #ffffff;   /* white       — card / panel bg            */
-  --surface-raised:       #ffffff;   /* white       — elevated card              */
-  --surface-subtle:       #f3f4f6;   /* neutral-100 — muted section bg           */
-  --surface-muted:        #e5e7eb;   /* neutral-200 — skeleton, divider fill     */
+  /* Brand */
+  --brand-primary:        #6366f1;
+  --brand-primary-hover:  #4f46e5;
+  --brand-primary-light:  #eef2ff;
+  --brand-primary-dark:   #3730a3;
+
+  /* Surfaces */
+  --surface-page:         #f9fafb;
+  --surface-card:         #ffffff;
+  --surface-raised:       #ffffff;
+  --surface-subtle:       #f3f4f6;
+  --surface-muted:        #e5e7eb;
   --surface-overlay:      rgba(0, 0, 0, 0.04);
 
-  /* ----------------------------------------------------------
-     Border scale (light mode)
-  ---------------------------------------------------------- */
-  --border-default:       #e5e7eb;   /* neutral-200 — card borders               */
-  --border-subtle:        #f3f4f6;   /* neutral-100 — inner dividers             */
-  --border-strong:        #d1d5db;   /* neutral-300 — hover / emphasis           */
-  --border-focus:         #6366f1;   /* brand       — focus ring                 */
+  /* Borders */
+  --border-default:       #e5e7eb;
+  --border-subtle:        #f3f4f6;
+  --border-strong:        #d1d5db;
+  --border-focus:         #6366f1;
 
-  /* ----------------------------------------------------------
-     Text scale (light mode)
-  ---------------------------------------------------------- */
-  --text-primary:         #111827;   /* neutral-900 — headings, important text   */
-  --text-secondary:       #374151;   /* neutral-700 — body text                  */
-  --text-muted:           #6b7280;   /* neutral-500 — supporting text            */
-  --text-subtle:          #9ca3af;   /* neutral-400 — placeholders, hints        */
-  --text-disabled:        #d1d5db;   /* neutral-300 — disabled state             */
-  --text-on-brand:        #ffffff;   /* white       — text on brand bg           */
-  --text-link:            #6366f1;   /* brand       — links                      */
+  /* Text */
+  --text-primary:         #111827;
+  --text-secondary:       #374151;
+  --text-muted:           #6b7280;
+  --text-subtle:          #9ca3af;
+  --text-disabled:        #d1d5db;
+  --text-on-brand:        #ffffff;
+  --text-link:            #6366f1;
 
-  /* ----------------------------------------------------------
-     Status colors — semantic, not decorative
-  ---------------------------------------------------------- */
+  /* Status */
+  --status-success-bg:    #f0fdf4;
+  --status-success-text:  #166534;
+  --status-success-border:#bbf7d0;
+  --status-success-dot:   #22c55e;
 
-  /* success / merged */
-  --status-success-bg:    #f0fdf4;   /* green-50  */
-  --status-success-text:  #166534;   /* green-800 */
-  --status-success-border:#bbf7d0;   /* green-200 */
-  --status-success-dot:   #22c55e;   /* green-500 */
+  --status-warning-bg:    #fffbeb;
+  --status-warning-text:  #92400e;
+  --status-warning-border:#fde68a;
+  --status-warning-dot:   #f59e0b;
 
-  /* warning / needs review */
-  --status-warning-bg:    #fffbeb;   /* amber-50  */
-  --status-warning-text:  #92400e;   /* amber-800 */
-  --status-warning-border:#fde68a;   /* amber-200 */
-  --status-warning-dot:   #f59e0b;   /* amber-400 */
+  --status-danger-bg:     #fef2f2;
+  --status-danger-text:   #991b1b;
+  --status-danger-border: #fecaca;
+  --status-danger-dot:    #ef4444;
 
-  /* danger / stale / error */
-  --status-danger-bg:     #fef2f2;   /* red-50    */
-  --status-danger-text:   #991b1b;   /* red-800   */
-  --status-danger-border: #fecaca;   /* red-200   */
-  --status-danger-dot:    #ef4444;   /* red-400   */
+  --status-info-bg:       #eff6ff;
+  --status-info-text:     #1e40af;
+  --status-info-border:   #bfdbfe;
+  --status-info-dot:      #3b82f6;
 
-  /* info / open PR */
-  --status-info-bg:       #eff6ff;   /* blue-50   */
-  --status-info-text:     #1e40af;   /* blue-800  */
-  --status-info-border:   #bfdbfe;   /* blue-200  */
-  --status-info-dot:      #3b82f6;   /* blue-500  */
+  --status-draft-bg:      #f9fafb;
+  --status-draft-text:    #374151;
+  --status-draft-border:  #e5e7eb;
+  --status-draft-dot:     #9ca3af;
 
-  /* draft */
-  --status-draft-bg:      #f9fafb;   /* neutral-50  */
-  --status-draft-text:    #374151;   /* neutral-700 */
-  --status-draft-border:  #e5e7eb;   /* neutral-200 */
-  --status-draft-dot:     #9ca3af;   /* neutral-400 */
+  --status-merged-bg:     #f5f3ff;
+  --status-merged-text:   #5b21b6;
+  --status-merged-border: #ddd6fe;
+  --status-merged-dot:    #8b5cf6;
 
-  /* merged / purple accent */
-  --status-merged-bg:     #f5f3ff;   /* violet-50  */
-  --status-merged-text:   #5b21b6;   /* violet-800 */
-  --status-merged-border: #ddd6fe;   /* violet-200 */
-  --status-merged-dot:    #8b5cf6;   /* violet-500 */
+  /* Lag */
+  --lag-good:             #22c55e;
+  --lag-warn:             #f59e0b;
+  --lag-crit:             #ef4444;
 
-  /* ----------------------------------------------------------
-     PR review lag thresholds
-  ---------------------------------------------------------- */
-  --lag-good:             #22c55e;   /* ≤ 8h    — green  */
-  --lag-warn:             #f59e0b;   /* 8–24h   — amber  */
-  --lag-crit:             #ef4444;   /* > 24h   — red    */
-
-  /* ----------------------------------------------------------
-     Chart colors
-  ---------------------------------------------------------- */
-  --chart-bar-primary:    #6366f1;   /* merged bars      */
-  --chart-bar-secondary:  #a5b4fc;   /* opened bars      */
-  --chart-grid:           rgba(0, 0, 0, 0.06);
-  --chart-axis:           #9ca3af;
-  --chart-tooltip-bg:     #ffffff;
-  --chart-tooltip-border: #e5e7eb;
-
-  /* ----------------------------------------------------------
-     Nav
-  ---------------------------------------------------------- */
+  /* Nav */
   --nav-height:           52px;
   --nav-bg:               #ffffff;
   --nav-border:           #e5e7eb;
@@ -133,120 +187,23 @@
   --nav-text-active:      #111827;
   --nav-active-bg:        #f3f4f6;
 
-  /* ----------------------------------------------------------
-     Radius
-  ---------------------------------------------------------- */
-  --radius-sm:            4px;
-  --radius-md:            8px;
-  --radius-lg:            10px;
-  --radius-xl:            12px;
-  --radius-full:          9999px;
+  /* Chart */
+  --chart-grid:           #e5e7eb;
+  --chart-axis:           #9ca3af;
+  --chart-tooltip-bg:     #ffffff;
+  --chart-tooltip-border: #e5e7eb;
+  --chart-bar-primary:    #6366f1;
+  --chart-bar-secondary:  #a5b4fc;
 
-  /* ----------------------------------------------------------
-     Shadows
-  ---------------------------------------------------------- */
-  --shadow-none:          none;
-  --shadow-sm:            0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md:            0 4px 6px -1px rgba(0, 0, 0, 0.07);
-
-  /* ----------------------------------------------------------
-     Spacing (used in component padding — reference only)
-  ---------------------------------------------------------- */
-  --space-1:  4px;
-  --space-2:  8px;
-  --space-3:  12px;
-  --space-4:  16px;
-  --space-5:  20px;
-  --space-6:  24px;
-  --space-8:  32px;
-  --space-10: 40px;
-
-  /* ----------------------------------------------------------
-     Transitions
-  ---------------------------------------------------------- */
+  /* Transitions */
   --transition-fast:      150ms ease;
   --transition-base:      200ms ease;
-  --transition-slow:      300ms ease;
-
-  /* ----------------------------------------------------------
-     Z-index scale
-  ---------------------------------------------------------- */
-  --z-base:     0;
-  --z-above:    10;
-  --z-nav:      100;
-  --z-modal:    200;
-  --z-toast:    300;
 }
 
 /* ============================================================
-   DARK MODE OVERRIDES
-   Only override what changes — brand stays the same.
+   DARK MODE
    ============================================================ */
 
-.dark, [data-theme="dark"] {
-
-  /* surfaces */
-  --surface-page:         #0a0a0a;
-  --surface-card:         #111111;
-  --surface-raised:       #1a1a1a;
-  --surface-subtle:       #1f1f1f;
-  --surface-muted:        #2a2a2a;
-  --surface-overlay:      rgba(255, 255, 255, 0.04);
-
-  /* borders */
-  --border-default:       #262626;
-  --border-subtle:        #1f1f1f;
-  --border-strong:        #3f3f3f;
-
-  /* text */
-  --text-primary:         #fafafa;
-  --text-secondary:       #e5e5e5;
-  --text-muted:           #a3a3a3;
-  --text-subtle:          #737373;
-  --text-disabled:        #404040;
-
-  /* status — dark mode variants */
-  --status-success-bg:    #052e16;
-  --status-success-text:  #86efac;
-  --status-success-border:#14532d;
-
-  --status-warning-bg:    #1c1400;
-  --status-warning-text:  #fcd34d;
-  --status-warning-border:#713f12;
-
-  --status-danger-bg:     #1c0505;
-  --status-danger-text:   #fca5a5;
-  --status-danger-border: #7f1d1d;
-
-  --status-info-bg:       #0c1a2e;
-  --status-info-text:     #93c5fd;
-  --status-info-border:   #1e3a5f;
-
-  --status-draft-bg:      #1a1a1a;
-  --status-draft-text:    #a3a3a3;
-  --status-draft-border:  #2a2a2a;
-
-  --status-merged-bg:     #1e0a3c;
-  --status-merged-text:   #c4b5fd;
-  --status-merged-border: #3b1f6e;
-
-  /* charts */
-  --chart-grid:           rgba(255, 255, 255, 0.06);
-  --chart-axis:           #525252;
-  --chart-tooltip-bg:     #1a1a1a;
-  --chart-tooltip-border: #262626;
-
-  /* nav */
-  --nav-bg:               #111111;
-  --nav-border:           #1f1f1f;
-  --nav-text:             #737373;
-  --nav-text-active:      #fafafa;
-  --nav-active-bg:        #1f1f1f;
-}
-
-/* ============================================================
-   SYSTEM DARK MODE — auto-detect if no class is set
-   ============================================================ */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --surface-page:         #0a0a0a;
@@ -290,108 +247,79 @@
     --status-merged-text:   #c4b5fd;
     --status-merged-border: #3b1f6e;
 
-    --chart-grid:           rgba(255, 255, 255, 0.06);
-    --chart-axis:           #525252;
-    --chart-tooltip-bg:     #1a1a1a;
-    --chart-tooltip-border: #262626;
-
     --nav-bg:               #111111;
     --nav-border:           #1f1f1f;
     --nav-text:             #737373;
     --nav-text-active:      #fafafa;
     --nav-active-bg:        #1f1f1f;
+
+    --chart-grid:           #2a2a2a;
+    --chart-axis:           #737373;
+    --chart-tooltip-bg:     #1a1a1a;
+    --chart-tooltip-border: #2a2a2a;
+    --chart-bar-primary:    #818cf8;
+    --chart-bar-secondary:  #4f46e5;
   }
 }
 
 /* ============================================================
-   BASE RESETS
+   BASE
    ============================================================ */
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+@layer base {
+  * {
+    border-color: var(--border-default);
+  }
 
-html {
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
 
-body {
-  font-family: var(--font-sans);
-  background-color: var(--surface-page);
-  color: var(--text-secondary);
-  line-height: 1.5;
-  min-height: 100vh;
-}
-
-#root {
-  min-height: 100vh;
-}
-
-/* ============================================================
-   TYPOGRAPHY SCALE
-   ============================================================ */
-
-h1 { font-size: 1.25rem;  font-weight: 600; color: var(--text-primary); line-height: 1.3; }
-h2 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); line-height: 1.35; }
-h3 { font-size: 1rem;     font-weight: 500; color: var(--text-primary); line-height: 1.4; }
-h4 { font-size: 0.875rem; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
-
-p  { color: var(--text-secondary); line-height: 1.6; }
-
-a {
-  color: var(--text-link);
-  text-decoration: none;
-  transition: opacity var(--transition-fast);
-}
-a:hover { opacity: 0.8; }
-
-code, kbd, pre {
-  font-family: var(--font-mono);
-  font-size: 0.875em;
+  body {
+    background-color: var(--surface-page);
+    color: var(--text-secondary);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
 }
 
 /* ============================================================
    COMPONENT PRIMITIVES
-   Ready-to-use classes — use these in Tailwind className strings
    ============================================================ */
 
 /* Card */
 .card {
   background: var(--surface-card);
   border: 0.5px solid var(--border-default);
-  border-radius: var(--radius-xl);
-  padding: var(--space-4) var(--space-5);
+  border-radius: 12px;
+  padding: 16px 20px;
 }
 
 .card-subtle {
   background: var(--surface-subtle);
-  border-radius: var(--radius-lg);
-  padding: var(--space-3) var(--space-4);
+  border-radius: 10px;
+  padding: 12px 16px;
 }
 
 /* Stat card */
 .stat-card {
   background: var(--surface-subtle);
-  border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
+  border-radius: 8px;
+  padding: 12px 16px;
 }
 
-/* Badge base */
+/* Badge */
 .badge {
   display: inline-flex;
   align-items: center;
   font-size: 0.6875rem;
   font-weight: 500;
   padding: 2px 8px;
-  border-radius: var(--radius-full);
+  border-radius: 9999px;
   border: 0.5px solid transparent;
 }
-
 .badge-open    { background: var(--status-info-bg);    color: var(--status-info-text);    border-color: var(--status-info-border); }
 .badge-merged  { background: var(--status-merged-bg);  color: var(--status-merged-text);  border-color: var(--status-merged-border); }
 .badge-draft   { background: var(--status-draft-bg);   color: var(--status-draft-text);   border-color: var(--status-draft-border); }
@@ -406,31 +334,28 @@ code, kbd, pre {
   display: inline-block;
   width: 7px;
   height: 7px;
-  border-radius: var(--radius-full);
+  border-radius: 9999px;
   flex-shrink: 0;
 }
 .lag-dot-good { background: var(--lag-good); }
 .lag-dot-warn { background: var(--lag-warn); }
 .lag-dot-crit { background: var(--lag-crit); }
 
-/* Button base */
+/* Button */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: 8px;
   font-size: 0.8125rem;
   font-weight: 500;
   padding: 6px 14px;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   border: 0.5px solid var(--border-strong);
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
-  transition:
-    background var(--transition-fast),
-    color var(--transition-fast),
-    border-color var(--transition-fast);
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
   white-space: nowrap;
   user-select: none;
 }
@@ -438,13 +363,8 @@ code, kbd, pre {
   background: var(--surface-subtle);
   color: var(--text-primary);
 }
-.btn:active:not(:disabled) {
-  transform: scale(0.98);
-}
-.btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
+.btn:active:not(:disabled) { transform: scale(0.98); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .btn-primary {
   background: var(--brand-primary);
@@ -461,7 +381,7 @@ code, kbd, pre {
 .filter-pill {
   font-size: 0.6875rem;
   padding: 3px 10px;
-  border-radius: var(--radius-full);
+  border-radius: 9999px;
   border: 0.5px solid var(--border-default);
   background: transparent;
   color: var(--text-muted);
@@ -479,33 +399,10 @@ code, kbd, pre {
   font-weight: 500;
 }
 
-/* WS indicator dot */
-.ws-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-}
-.ws-dot-connected    { background: var(--lag-good); }
-.ws-dot-connecting   { background: var(--lag-warn); }
-.ws-dot-disconnected { background: var(--text-disabled); }
-
-/* Skeleton pulse */
-.skeleton {
-  background: var(--surface-muted);
-  border-radius: var(--radius-sm);
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
-}
-@keyframes skeleton-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.5; }
-}
-
 /* Spinner */
 .spinner {
   display: inline-block;
-  border-radius: var(--radius-full);
+  border-radius: 9999px;
   border: 2px solid var(--border-strong);
   border-top-color: var(--brand-primary);
   animation: spin 0.7s linear infinite;
@@ -520,13 +417,10 @@ code, kbd, pre {
   outline-offset: 2px;
 }
 
-/* Scrollbar (webkit) */
+/* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
-  border-radius: var(--radius-full);
-}
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-disabled); }
 
 /* Selection */

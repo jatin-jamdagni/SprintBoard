@@ -1,10 +1,15 @@
 import { config } from "@repo/config";
 import { createGitHubClient, fetchPullRequests, fetchSinglePR } from "@repo/github";
 import { upsertPR, getWorkspaceById, getAllWorkspaces } from "@repo/db";
+import { wsBroker } from "../lib/ws-broker";
+import {
+  cacheInvalidatePattern,
+  cacheDel,
+  CacheKeys,
+} from "@repo/cache";
 
-function buildGitHubClient(workspaceToken?: string | null) {
-  const token = workspaceToken?.trim() || config.GITHUB_TOKEN;
-  return createGitHubClient({ token });
+function buildGitHubClient() {
+  return createGitHubClient({ token: config.GITHUB_TOKEN });
 }
 
 function splitRepo(workspace: { githubOrg: string; githubRepo: string }) {
@@ -21,37 +26,15 @@ export type SyncWorkspaceResult = {
   synced: number;
   rateLimitRemaining: number | null;
   fetchedAt: string;
+  fromCache: boolean;
 };
-
-export type SyncWorkspaceFailure = {
-  workspaceId: number;
-  reason: string;
-  status: number | null;
-};
-
-export type SyncAllWorkspacesResult = {
-  succeeded: SyncWorkspaceResult[];
-  failed: SyncWorkspaceFailure[];
-};
-
-function parseError(error: unknown): { message: string; status: number | null } {
-  const message = error instanceof Error ? error.message : String(error);
-  const status =
-    typeof error === "object" &&
-    error !== null &&
-    "status" in error &&
-    typeof (error as { status?: unknown }).status === "number"
-      ? (error as { status: number }).status
-      : null;
-  return { message, status };
-}
 
 export async function syncWorkspace(workspaceId: number): Promise<SyncWorkspaceResult> {
   const workspace = await getWorkspaceById(workspaceId);
   if (!workspace) throw new Error(`Workspace ${workspaceId} not found`);
 
   const { owner, repo } = splitRepo(workspace);
-  const client = buildGitHubClient(workspace.githubToken);
+  const client = buildGitHubClient();
 
   console.log(`[sync] workspace=${workspaceId} repo=${owner}/${repo}`);
 
@@ -62,6 +45,7 @@ export async function syncWorkspace(workspaceId: number): Promise<SyncWorkspaceR
     workspaceId,
     state: "all",
     perPage: 50,
+    bypassCache: true,
   });
 
   const upserted = await Promise.all(
@@ -75,49 +59,37 @@ export async function syncWorkspace(workspaceId: number): Promise<SyncWorkspaceR
     )
   );
 
-  console.log(`[sync] upserted=${upserted.length} rateLimitRemaining=${result.rateLimitRemaining}`);
+  await cacheInvalidatePattern(`db:prs:workspace:${workspaceId}*`);
+  await cacheInvalidatePattern(`db:snapshots:workspace:${workspaceId}*`);
+
+  wsBroker.broadcast(workspaceId, {
+    type: "pr.synced",
+    workspaceId,
+    synced: upserted.length,
+  });
+
+  console.log(`[sync] upserted=${upserted.length} fromCache=${result.fromCache} rateLimitRemaining=${result.rateLimitRemaining}`);
 
   return {
     workspaceId,
     synced: upserted.length,
     rateLimitRemaining: result.rateLimitRemaining,
     fetchedAt: result.fetchedAt,
+    fromCache: result.fromCache,
   };
 }
 
-export async function syncAllWorkspaces(): Promise<SyncAllWorkspacesResult> {
+export async function syncAllWorkspaces(): Promise<SyncWorkspaceResult[]> {
   const workspaces = await getAllWorkspaces();
   console.log(`[cron] syncing ${workspaces.length} workspace(s)`);
 
   const results = await Promise.allSettled(
     workspaces.map((ws) => syncWorkspace(ws.id))
   );
-  const succeeded: SyncWorkspaceResult[] = [];
-  const failed: SyncWorkspaceFailure[] = [];
 
-  results.forEach((result, index) => {
-    const workspaceId = workspaces[index]?.id ?? -1;
-
-    if (result.status === "fulfilled") {
-      succeeded.push(result.value);
-      return;
-    }
-
-    const { message, status } = parseError(result.reason);
-    failed.push({
-      workspaceId,
-      reason: message,
-      status,
-    });
-
-    const suffix =
-      status === 404
-        ? " (check repo path and token access for this workspace)"
-        : "";
-    console.warn(`[cron] workspace=${workspaceId} failed: ${message}${suffix}`);
-  });
-
-  return { succeeded, failed };
+  return results
+    .filter((r): r is PromiseFulfilledResult<SyncWorkspaceResult> => r.status === "fulfilled")
+    .map((r) => r.value);
 }
 
 export async function syncSinglePR(
@@ -128,7 +100,7 @@ export async function syncSinglePR(
   if (!workspace) throw new Error(`Workspace ${workspaceId} not found`);
 
   const { owner, repo } = splitRepo(workspace);
-  const client = buildGitHubClient(workspace.githubToken);
+  const client = buildGitHubClient();
 
   const pr = await fetchSinglePR({ client, owner, repo, prNumber, workspaceId });
   if (!pr) {
@@ -136,12 +108,21 @@ export async function syncSinglePR(
     return;
   }
 
-  await upsertPR({
+  const saved = await upsertPR({
     ...pr,
     openedAt: new Date(pr.openedAt),
     mergedAt: pr.mergedAt ? new Date(pr.mergedAt) : null,
     firstReviewAt: pr.firstReviewAt ? new Date(pr.firstReviewAt) : null,
   });
 
-  console.log(`[sync] upserted PR #${prNumber} for workspace=${workspaceId}`);
+  await cacheDel(CacheKeys.workspacePRs(workspaceId));
+
+  wsBroker.broadcast(workspaceId, {
+    type: "pr.upserted",
+    workspaceId,
+    prNumber: saved.prNumber,
+    repo: saved.repo,
+  });
+
+  console.log(`[sync] upserted PR #${prNumber} workspace=${workspaceId}`);
 }

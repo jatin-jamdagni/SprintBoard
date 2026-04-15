@@ -12,11 +12,13 @@
     "@elysiajs/cron": "^1.4.1",
     "@elysiajs/node": "^1.4.5",
     "@elysiajs/openapi": "^1.4.14",
+    "@elysiajs/websocket": "^0.2.8",
     "@repo/ai": "workspace:*",
     "@repo/config": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/github": "workspace:*",
     "@repo/types": "workspace:*",
+    "@repo/cache": "workspace:*",
     "elysia": "latest"
   },
   "devDependencies": {

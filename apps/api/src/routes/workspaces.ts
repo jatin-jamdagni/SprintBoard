@@ -1,13 +1,19 @@
 import { Elysia } from "elysia";
 import { getAllWorkspaces, createWorkspace, getWorkspaceById } from "@repo/db";
 import { CreateWorkspaceSchema } from "@repo/types";
+import { authPlugin, requireAuth } from "../plugins/auth.plugin";
 
 export const workspaceRoutes = new Elysia({ prefix: "/api/workspaces" })
-    .get("/", async () => {
+    .use(authPlugin)
+
+    .get("/", async ({ auth }) => {
+        requireAuth(auth);
         const data = await getAllWorkspaces();
-        return { success: true, data };
+        const scoped = data.filter((ws) => ws.id === auth.user.workspaceId);
+        return { success: true, data: scoped };
     })
-    .get("/:workspaceId", async ({ params, set }) => {
+    .get("/:workspaceId", async ({ auth, params, set }) => {
+        requireAuth(auth);
         const workspace = await getWorkspaceById(Number(params.workspaceId));
         if (!workspace) {
             set.status = 404;
@@ -19,7 +25,9 @@ export const workspaceRoutes = new Elysia({ prefix: "/api/workspaces" })
         }
         return { success: true, data: workspace };
     })
-    .post("/", async ({ body, set }) => {
+    .post("/", async ({ auth, body, set }) => {
+        requireAuth(auth);
+
         const parsed = CreateWorkspaceSchema.safeParse(body);
         if (!parsed.success) {
 

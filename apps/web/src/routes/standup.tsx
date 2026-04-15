@@ -1,47 +1,59 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { summariesApi, ApiError } from "@repo/api-client";
-
-const WORKSPACE_ID = 1;
+import { useAuth } from "../context/auth-context";
+import { useWSUpdates } from "../hooks/use-ws-updates";
 
 export const Route = createFileRoute("/standup")({
   component: StandupPage,
 });
 
+const MODEL_LABEL = "claude-sonnet-4-20250514";
+
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString("en-US", {
     weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+    month:   "short",
+    day:     "numeric",
+    hour:    "2-digit",
+    minute:  "2-digit",
   });
 }
 
-function MarkdownContent({ content }: { content: string }) {
-  const lines = content.split("\n");
-
+// Minimal markdown renderer — handles **bold** headings and - bullet lines
+function SummaryContent({ content }: { content: string }) {
   return (
     <div className="space-y-1">
-      {lines.map((line, i) => {
-        if (line.startsWith("**") && line.endsWith("**")) {
+      {content.split("\n").map((line, i) => {
+        // bold heading: **Shipped**
+        if (/^\*\*.+\*\*$/.test(line.trim())) {
           return (
-            <h3 key={i} className="text-sm font-semibold text-[var(--text-primary)] mt-5 first:mt-0">
+            <h3
+              key={i}
+              className="text-sm font-semibold text-text-primary mt-5 first:mt-0"
+            >
               {line.replace(/\*\*/g, "")}
             </h3>
           );
         }
+        // bullet line
         if (line.startsWith("- ") || line.startsWith("• ")) {
           return (
-            <div key={i} className="flex gap-2 text-sm text-[var(--text-secondary)]">
-              <span className="text-[var(--text-subtle)] shrink-0 mt-0.5">–</span>
+            <div key={i} className="flex gap-2 text-sm text-text-secondary">
+              <span className="text-text-subtle shrink-0 mt-0.5 select-none">
+                –
+              </span>
               <span>{line.slice(2)}</span>
             </div>
           );
         }
-        if (line.trim() === "") return <div key={i} className="h-1" />;
+        // blank line → small gap
+        if (line.trim() === "") {
+          return <div key={i} className="h-1" />;
+        }
+        // plain paragraph
         return (
-          <p key={i} className="text-sm text-[var(--text-secondary)]">
+          <p key={i} className="text-sm text-text-secondary">
             {line}
           </p>
         );
@@ -51,23 +63,33 @@ function MarkdownContent({ content }: { content: string }) {
 }
 
 function StandupPage() {
-  const qc = useQueryClient();
+  const auth        = useAuth();
+  const qc          = useQueryClient();
 
+  const workspaceId =
+    auth.status === "authenticated" ? auth.user.workspaceId : 1;
+
+  // live updates — summary.generated event refreshes the query
+  useWSUpdates(workspaceId);
+
+  // ── queries ──────────────────────────────────────────────
   const {
     data: summary,
     isLoading,
     isError,
     error,
   } = useQuery({
-    queryKey: ["summary-latest", WORKSPACE_ID],
-    queryFn: () => summariesApi.getLatest(WORKSPACE_ID),
-    retry: (_, err) => !(err instanceof ApiError && err.status === 404),
+    queryKey: ["summary-latest", workspaceId],
+    queryFn:  () => summariesApi.getLatest(workspaceId),
+    retry: (_, err) =>
+      !(err instanceof ApiError && err.status === 404),
   });
 
+  // ── generate mutation ─────────────────────────────────────
   const generateMutation = useMutation({
-    mutationFn: () => summariesApi.generate(WORKSPACE_ID),
+    mutationFn: () => summariesApi.generate(workspaceId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["summary-latest", WORKSPACE_ID] });
+      qc.invalidateQueries({ queryKey: ["summary-latest", workspaceId] });
     },
   });
 
@@ -75,15 +97,15 @@ function StandupPage() {
     isError && error instanceof ApiError && error.status === 404;
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-2xl space-y-5">
 
-      {/* Header */}
-      <div className="flex items-start justify-between">
+      {/* ── Header ────────────────────────────────────────── */}
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-[var(--text-primary)]">
+          <h1 className="text-xl font-semibold text-text-primary">
             Standup summary
           </h1>
-          <p className="text-[13px] text-[var(--text-subtle)] mt-0.5">
+          <p className="text-[13px] text-text-muted mt-0.5">
             AI-generated from your latest PR activity
           </p>
         </div>
@@ -91,103 +113,103 @@ function StandupPage() {
         <button
           onClick={() => generateMutation.mutate()}
           disabled={generateMutation.isPending}
-          className="btn btn-primary shrink-0"
+          className="btn btn-primary"
         >
           {generateMutation.isPending ? (
-            <span className="flex items-center gap-1.5">
-              <span className="spinner w-3 h-3 border-[var(--text-on-brand)] border-t-transparent" />
+            <>
+              <span className="spinner w-3 h-3" />
               Generating…
-            </span>
+            </>
           ) : (
             "Generate summary"
           )}
         </button>
       </div>
 
-      {/* Generate error */}
+      {/* ── Generate error ────────────────────────────────── */}
       {generateMutation.isError && (
-        <div className="px-4 py-3 rounded-lg bg-[var(--status-danger-bg)] border border-[var(--status-danger-border)] text-sm text-[var(--status-danger-text)]">
+        <div className="px-4 py-3 rounded-lg bg-status-danger-bg border border-status-danger-border text-sm text-status-danger-text">
           {generateMutation.error instanceof Error
             ? generateMutation.error.message
-            : "Generation failed"}
+            : "Generation failed — make sure PRs are synced first"}
         </div>
       )}
 
-      {/* Loading */}
+      {/* ── Loading skeleton ──────────────────────────────── */}
       {isLoading && (
-        <div className="card space-y-3 animate-pulse">
-          <div className="h-3 bg-[var(--surface-muted)] rounded w-1/3" />
-          <div className="space-y-2">
-            <div className="h-2.5 bg-[var(--surface-muted)] rounded w-full" />
-            <div className="h-2.5 bg-[var(--surface-muted)] rounded w-5/6" />
-            <div className="h-2.5 bg-[var(--surface-muted)] rounded w-4/6" />
+        <div className="bg-surface-card border border-border-default rounded-xl p-5 space-y-3 animate-pulse">
+          <div className="h-3 bg-surface-muted rounded w-1/3" />
+          <div className="space-y-2 pt-1">
+            <div className="h-2.5 bg-surface-muted rounded w-full" />
+            <div className="h-2.5 bg-surface-muted rounded w-5/6" />
+            <div className="h-2.5 bg-surface-muted rounded w-4/6" />
           </div>
         </div>
       )}
 
-      {/* Empty state */}
+      {/* ── Empty state ───────────────────────────────────── */}
       {isEmpty && !generateMutation.isPending && (
-        <div className="card border-dashed border-[var(--border-strong)] p-10 text-center">
-          <p className="text-sm font-medium text-[var(--text-primary)] mb-1">
+        <div className="bg-surface-card border border-dashed border-border-strong rounded-xl p-12 text-center">
+          <p className="text-sm font-medium text-text-primary mb-1">
             No summary yet
           </p>
-          <p className="text-[13px] text-[var(--text-subtle)] mb-4">
-            Make sure you've synced your PRs, then hit generate.
+          <p className="text-[13px] text-text-muted mb-5">
+            Sync your PRs first, then generate a summary.
           </p>
           <button
             onClick={() => generateMutation.mutate()}
             disabled={generateMutation.isPending}
-            className="btn btn-primary"
+            className="btn btn-primary px-5 py-2"
           >
             Generate first summary
           </button>
         </div>
       )}
 
-      {/* Generating spinner overlay on card */}
+      {/* ── Generating in-progress card ───────────────────── */}
       {generateMutation.isPending && (
-        <div className="card">
-          <div className="flex items-center gap-3 text-sm text-[var(--text-muted)]">
-            <span className="spinner w-4 h-4 border-t-transparent shrink-0" />
-            Asking Claude to summarize your team's activity…
+        <div className="bg-surface-card border border-border-default rounded-xl px-5 py-4">
+          <div className="flex items-center gap-3 text-sm text-text-muted">
+            <span className="w-4 h-4 rounded-full border-2 border-violet-300 border-t-violet-600 animate-spin shrink-0" />
+            Asking Claude to summarise your team's activity…
           </div>
         </div>
       )}
 
-      {/* Summary card */}
+      {/* ── Summary card ──────────────────────────────────── */}
       {summary && !generateMutation.isPending && (
-        <div className="card p-0 overflow-hidden">
+        <div className="bg-surface-card border border-border-default rounded-xl overflow-hidden">
 
           {/* card header */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border-subtle)] bg-[var(--surface-subtle)]">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between px-5 py-3 bg-surface-subtle border-b border-border-subtle">
+            <div className="flex items-center gap-2.5">
               <span className="badge badge-ai">
                 AI summary
               </span>
-              <span className="text-[11px] text-[var(--text-subtle)]">
+              <span className="text-[11px] text-text-muted">
                 {formatDate(String(summary.generatedAt))}
               </span>
             </div>
-            <div className="flex items-center gap-3 text-[11px] text-[var(--text-subtle)]">
-              <span>{summary.prCount} PRs</span>
+            <div className="flex items-center gap-3 text-[11px] text-text-muted">
+              <span>{summary.prCount} PR{summary.prCount !== 1 ? "s" : ""}</span>
               <span>{summary.mergedCount} merged</span>
             </div>
           </div>
 
           {/* content */}
           <div className="px-5 py-4">
-            <MarkdownContent content={summary.content} />
+            <SummaryContent content={summary.content} />
           </div>
 
-          {/* footer */}
-          <div className="px-5 py-3 border-t border-[var(--border-subtle)] flex items-center justify-between">
-            <span className="text-[11px] text-[var(--text-subtle)]">
-              Generated by {ANTHROPIC_MODEL_LABEL}
+          {/* card footer */}
+          <div className="flex items-center justify-between px-5 py-3 border-t border-border-subtle">
+            <span className="text-[11px] text-text-muted">
+              {MODEL_LABEL}
             </span>
             <button
               onClick={() => generateMutation.mutate()}
               disabled={generateMutation.isPending}
-              className="text-[11px] text-[var(--text-subtle)] hover:text-[var(--text-secondary)] transition-colors disabled:opacity-50"
+              className="text-[11px] text-text-muted hover:text-text-primary transition-colors disabled:opacity-40"
             >
               Regenerate ↺
             </button>
@@ -197,5 +219,3 @@ function StandupPage() {
     </div>
   );
 }
-
-const ANTHROPIC_MODEL_LABEL = "claude-sonnet-4-20250514";

@@ -7,6 +7,7 @@ import {
 } from "@repo/db";
 import Elysia from "elysia";
 import { generateStandupSummary } from "@repo/ai";
+import { wsBroker } from "../lib/ws-broker";
 
 export const summaryRoutes = new Elysia({
   prefix: "/api/workspaces/:workspaceId/summaries",
@@ -83,6 +84,12 @@ export const summaryRoutes = new Elysia({
       prCount: result.prCount,
       mergedCount: result.mergedCount,
     });
+
+    wsBroker.broadcast(workspaceId, {
+      type: "summary.generated",
+      workspaceId,
+      summaryId: saved.id, 
+    })
 
     console.log(
       `[ai] Summary generated. Tokens: ${result.inputTokens} in / ${result.outputTokens} out`,

@@ -4,6 +4,9 @@
   "compilerOptions": {
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "types": ["bun-types"]
+    "types": [
+      "bun-types",
+      "node"
+    ]
   }
 }

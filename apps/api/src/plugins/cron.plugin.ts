@@ -17,11 +17,9 @@ export const cronPlugin: AnyElysia = new Elysia({ name: "cron-plugin" }).use(
     async run() {
       console.log(`[cron] tick — ${new Date().toISOString()}`);
       try {
-        const { succeeded, failed } = await syncAllWorkspaces();
-        const total = succeeded.reduce((sum, result) => sum + result.synced, 0);
-        console.log(
-          `[cron] done — ${total} PRs upserted across ${succeeded.length} workspace(s); ${failed.length} failed`,
-        );
+        const results = await syncAllWorkspaces();
+        const total = results.reduce((sum, result) => sum + result.synced, 0);
+        console.log(`[cron] done — ${total} PRs upserted across ${results.length} workspace(s)`);
       } catch (err) {
         console.error("[cron] error —", err);
       }

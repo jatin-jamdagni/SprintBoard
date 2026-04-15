@@ -16,18 +16,18 @@ export function createGitHubClient(options: GitHubClientOptions): Octokit {
         throttle: {
             onRateLimit: (retryAfter, options) => {
                 console.warn(
-                    `[github] Rate limit hit for ${options.method} ${options.url}. Retrying after ${retryAfter}s`
+                    `[github] Rate limit hit for ${options.method} ${options.url}. Not retrying automatically (retryAfter=${retryAfter}s).`
                 );
-                return true;
+                return false;
             },
             onSecondaryRateLimit: (_, options) => {
                 console.warn(
-                    `[github] Secondary rate limit for ${options.method} ${options.url}`
+                    `[github] Secondary rate limit for ${options.method} ${options.url}. Not retrying automatically.`
                 );
+                return false;
             },
         },
     });
 }
 
 export type GitHubClient = ReturnType<typeof createGitHubClient>;
-

@@ -15,6 +15,8 @@ export const serverConfigSchema = z.object({
     API_PORT: z.coerce.number().default(3000),
     WEB_PORT: z.coerce.number().default(5173),
     API_CORS_ORIGIN: z.string().default("http://localhost:5173"),
+    APP_URL: z.string().default("http://localhost:5173"),
+
 
     // database
     DATABASE_URL: z.url("DATABASE_URL must be a valid postgres URL"),
@@ -25,18 +27,22 @@ export const serverConfigSchema = z.object({
     GITHUB_REPO: z.string().min(1, "GITHUB_REPO is required"),
     GITHUB_POLL_INTERVAL_MS: z.coerce.number().default(5 * 60 * 1000),
     GITHUB_WEBHOOK_SECRET: z.string().optional(),
+    GITHUB_CLIENT_ID: z.string().min(1, "GITHUB_CLIENT_ID is required"),
+    GITHUB_CLIENT_SECRET: z.string().min(1, "GITHUB_CLIENT_SECRET is required"),
+
 
 
     // anthropic
     ANTHROPIC_API_KEY: optionalSecret,
     ANTHROPIC_MODEL: z.string().default("claude-sonnet-4-20250514"),
 
+    // Groq
     GROQ_API_KEY: optionalSecret,
     GROQ_MODEL: z.string().default("openai/gpt-oss-20b"),
     AI_PROVIDER: z.enum(["anthropic", "groq"]).default("groq"),
 
     // redis (optional until Day 9)
-    REDIS_URL: z.string().optional(),
+    REDIS_URL: z.string().default("redis://localhost:6379"),
 
 })
 

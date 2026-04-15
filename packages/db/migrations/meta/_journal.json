@@ -8,6 +8,13 @@
       "when": 1775731243306,
       "tag": "0000_harsh_morph",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1776255463303,
+      "tag": "0001_kind_strong_guy",
+      "breakpoints": true
     }
   ]
 }

@@ -53,15 +53,15 @@ export async function upsertPR(data: InsertPullRequestRow) {
         pullRequests.prNumber,
       ],
       set: {
-        title: data.title,
-        status: data.status,
-        isDraft: data.isDraft,
-        mergedAt: data.mergedAt,
+        title:         data.title,
+        status:        data.status,
+        isDraft:       data.isDraft,
+        mergedAt:      data.mergedAt,
         firstReviewAt: data.firstReviewAt,
-        reviewCount: data.reviewCount,
-        additions: data.additions,
-        deletions: data.deletions,
-        updatedAt: new Date(),
+        reviewCount:   data.reviewCount,
+        additions:     data.additions,
+        deletions:     data.deletions,
+        updatedAt:     new Date(),
       },
     })
     .returning();

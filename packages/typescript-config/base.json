@@ -14,8 +14,11 @@
     "noUnusedParameters": false,
     "preserveWatchOutput": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "target": "ES2022",
+    "resolveJsonModule": true,
   },
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
- 
