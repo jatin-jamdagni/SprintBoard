@@ -20,125 +20,59 @@ export function PRCard({ pr }: Props) {
   const lagHours =
     pr.firstReviewAt != null
       ? Math.round(
-          ((new Date(pr.firstReviewAt).getTime() - openedAt.getTime()) /
-            3_600_000) *
-            100
-        ) / 100
+        ((new Date(pr.firstReviewAt).getTime() - openedAt.getTime()) /
+          3_600_000) *
+        100
+      ) / 100
       : null;
-
   return (
-    <div
-      style={{
-        background: "var(--color-background-primary)",
-        border: "0.5px solid var(--color-border-tertiary)",
-        borderRadius: 10,
-        padding: "12px 14px",
-        transition: "border-color 0.15s",
-      }}
-      onMouseEnter={(e) =>
-        ((e.currentTarget as HTMLDivElement).style.borderColor =
-          "var(--color-border-secondary)")
-      }
-      onMouseLeave={(e) =>
-        ((e.currentTarget as HTMLDivElement).style.borderColor =
-          "var(--color-border-tertiary)")
-      }
-    >
+    <div className="card p-3.5 hover:border-[var(--border-strong)] transition-colors">
+
       {/* top row */}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 8 }}>
-        <div
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: "50%",
-            background: "var(--color-background-secondary)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 11,
-            fontWeight: 500,
-            color: "var(--color-text-secondary)",
-            flexShrink: 0,
-          }}
-        >
+      <div className="flex items-start gap-2.5 mb-2.5">
+        <div className="w-7 h-7 rounded-full bg-[var(--surface-subtle)] flex items-center justify-center text-[10px] font-medium text-[var(--text-muted)] shrink-0">
           {initials(pr.author)}
         </div>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              fontSize: 13,
-              fontWeight: 500,
-              color: "var(--color-text-primary)",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              marginBottom: 3,
-            }}
-          >
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-[var(--text-primary)] truncate">
             {pr.title}
             <StatusBadge
               status={pr.status as "open" | "merged" | "closed" | "draft"}
               openedAt={openedAt}
               reviewCount={pr.reviewCount}
             />
-          </div>
-          <div style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>
+          </p>
+          <p className="text-[11px] text-[var(--text-subtle)] mt-0.5">
             #{pr.prNumber} · @{pr.author} · {timeAgo(openedAt)}
-          </div>
+          </p>
         </div>
 
-        
-          <a href={pr.url}
+
+        <a href={pr.url}
           target="_blank"
           rel="noreferrer"
-          style={{
-            fontSize: 11,
-            color: "var(--color-text-tertiary)",
-            textDecoration: "none",
-            flexShrink: 0,
-            padding: "2px 6px",
-            borderRadius: 4,
-            border: "0.5px solid var(--color-border-tertiary)",
-          }}
+          className="text-[11px] text-[var(--text-subtle)] hover:text-[var(--text-secondary)] px-1.5 py-0.5 rounded border border-[var(--border-default)] shrink-0 transition-colors"
         >
           GH ↗
         </a>
       </div>
 
-      {/* footer row */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 16,
-          borderTop: "0.5px solid var(--color-border-tertiary)",
-          paddingTop: 8,
-        }}
-      >
-        <span
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 5,
-            fontSize: 11,
-            color: "var(--color-text-tertiary)",
-          }}
-        >
+      {/* footer */}
+      <div className="flex items-center gap-4 border-t border-[var(--border-subtle)] pt-2">
+        <span className="flex items-center gap-1.5 text-[11px] text-[var(--text-subtle)]">
           <ReviewLagDot lagHours={lagHours} reviewCount={pr.reviewCount} />
           {pr.reviewCount === 0
             ? "No reviews yet"
             : `${lagHours?.toFixed(1) ?? "?"}h to first review`}
         </span>
-
-        <span style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>
+        <span className="text-[11px] text-[var(--text-subtle)]">
           {pr.reviewCount} review{pr.reviewCount !== 1 ? "s" : ""}
         </span>
-
-        <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", marginLeft: "auto" }}>
-          <span style={{ color: "#16a34a" }}>+{pr.additions}</span>
-          {" / "}
-          <span style={{ color: "#dc2626" }}>-{pr.deletions}</span>
+        <span className="ml-auto text-[11px]">
+          <span className="text-[var(--status-success-dot)]">+{pr.additions}</span>
+          <span className="text-[var(--text-disabled)]"> / </span>
+          <span className="text-[var(--status-danger-dot)]">-{pr.deletions}</span>
         </span>
       </div>
     </div>

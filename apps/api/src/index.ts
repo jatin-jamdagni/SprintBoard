@@ -1,14 +1,16 @@
 import cors from "@elysiajs/cors";
 import openapi from "@elysiajs/openapi";
+import { env } from "@repo/config/server";
 import { Elysia } from "elysia";
 import { healthRoutes } from "./routes/health";
 import { workspaceRoutes } from "./routes/workspaces";
 import { prRoutes } from "./routes/pull-requests";
 import { syncRoutes } from "./routes/sync";
+import { summaryRoutes } from "./routes/summaries";
 
 const app = new Elysia()
   .use(cors({
-    origin: ["https://localhost:5173"],
+    origin: [env.API_CORS_ORIGIN],
     credentials: true
   }))
   .use(openapi({
@@ -24,6 +26,7 @@ const app = new Elysia()
   .use(workspaceRoutes)
   .use(prRoutes)
   .use(syncRoutes)
+  .use(summaryRoutes)
   .onError(({ error, code, set }) => {
     if (code !== "NOT_FOUND") {
       console.error(`[${code}]`, error);
@@ -36,7 +39,7 @@ const app = new Elysia()
 
     };
   })
-  .listen(3000);
+  .listen(env.API_PORT);
 
 
 console.log(`🚀 API → http://localhost:${app.server?.port}`);

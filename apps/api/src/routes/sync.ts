@@ -1,3 +1,4 @@
+import { env } from "@repo/config/server";
 import { getWorkspaceById, upsertPR } from "@repo/db";
 import { createGitHubClient, fetchPullRequests, fetchRateLimit } from "@repo/github";
 import Elysia from "elysia";
@@ -6,11 +7,7 @@ import Elysia from "elysia";
 
 
 function getGithubClient() {
-
-    const token = process.env.GITHUB_TOKEN;
-    if (!token) throw new Error("GITHUB_TOKEN is not set");
-
-    return createGitHubClient({ token });
+    return createGitHubClient({ token: env.GITHUB_TOKEN });
 }
 
 

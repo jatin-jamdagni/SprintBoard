@@ -6,24 +6,10 @@ type Props = {
 
 export function StatCard({ label, value, sub }: Props) {
   return (
-    <div
-      style={{
-        background: "var(--color-background-secondary)",
-        borderRadius: 8,
-        padding: "12px 14px",
-      }}
-    >
-      <div style={{ fontSize: 11, color: "var(--color-text-tertiary)", marginBottom: 4 }}>
-        {label}
-      </div>
-      <div style={{ fontSize: 20, fontWeight: 500, color: "var(--color-text-primary)" }}>
-        {value}
-      </div>
-      {sub && (
-        <div style={{ fontSize: 10, color: "var(--color-text-tertiary)", marginTop: 2 }}>
-          {sub}
-        </div>
-      )}
+    <div className="stat-card">
+      <p className="text-[11px] text-[var(--text-subtle)] mb-1">{label}</p>
+      <p className="text-xl font-semibold text-[var(--text-primary)]">{value}</p>
+      {sub && <p className="text-[10px] text-[var(--text-subtle)] mt-0.5">{sub}</p>}
     </div>
   );
 }

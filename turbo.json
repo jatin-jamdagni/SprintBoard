@@ -1,8 +1,23 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "globalEnv": [
+    "NODE_ENV",
+    "API_PORT",
+    "WEB_PORT",
+    "API_CORS_ORIGIN",
     "DATABASE_URL",
-    "API_URL"
+    "GITHUB_TOKEN",
+    "GITHUB_ORG",
+    "GITHUB_REPO",
+    "GITHUB_POLL_INTERVAL_MS",
+    "ANTHROPIC_API_KEY",
+    "ANTHROPIC_MODEL",
+    "GROQ_API_KEY",
+    "GROQ_MODEL",
+    "AI_PROVIDER",
+    "REDIS_URL",
+    "API_URL",
+    "API_KEY"
   ],
   "tasks": {
     "build": {

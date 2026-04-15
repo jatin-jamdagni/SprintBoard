@@ -1,1 +1,536 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Fira Code", monospace;
+  --color-white: var(--surface-card);
+  --color-neutral-50: var(--surface-page);
+  --color-neutral-100: var(--surface-subtle);
+  --color-neutral-200: var(--border-default);
+  --color-neutral-300: var(--border-strong);
+  --color-neutral-400: var(--text-subtle);
+  --color-neutral-500: var(--text-muted);
+  --color-neutral-600: var(--text-secondary);
+  --color-neutral-700: var(--text-secondary);
+  --color-neutral-800: var(--surface-subtle);
+  --color-neutral-900: var(--text-primary);
+  --color-neutral-950: var(--surface-page);
+  --color-violet-50: var(--status-merged-bg);
+  --color-violet-300: var(--status-merged-text);
+  --color-violet-700: var(--status-merged-text);
+  --color-violet-950: var(--status-merged-bg);
+}
+
+/* ============================================================
+   DESIGN TOKENS
+   All colors, radii, shadows, and spacing in one place.
+   Import this file once in main.tsx — never hardcode values.
+   ============================================================ */
+
+:root {
+  /* ----------------------------------------------------------
+     Brand
+  ---------------------------------------------------------- */
+  --brand-primary:        #6366f1;   /* indigo-500  — buttons, active states     */
+  --brand-primary-hover:  #4f46e5;   /* indigo-600  — hover                      */
+  --brand-primary-light:  #eef2ff;   /* indigo-50   — light bg tint              */
+  --brand-primary-dark:   #3730a3;   /* indigo-800  — dark mode accent           */
+
+  /* ----------------------------------------------------------
+     Neutral surface scale (light mode)
+     Used for backgrounds, cards, borders.
+  ---------------------------------------------------------- */
+  --surface-page:         #f9fafb;   /* neutral-50  — page background            */
+  --surface-card:         #ffffff;   /* white       — card / panel bg            */
+  --surface-raised:       #ffffff;   /* white       — elevated card              */
+  --surface-subtle:       #f3f4f6;   /* neutral-100 — muted section bg           */
+  --surface-muted:        #e5e7eb;   /* neutral-200 — skeleton, divider fill     */
+  --surface-overlay:      rgba(0, 0, 0, 0.04);
+
+  /* ----------------------------------------------------------
+     Border scale (light mode)
+  ---------------------------------------------------------- */
+  --border-default:       #e5e7eb;   /* neutral-200 — card borders               */
+  --border-subtle:        #f3f4f6;   /* neutral-100 — inner dividers             */
+  --border-strong:        #d1d5db;   /* neutral-300 — hover / emphasis           */
+  --border-focus:         #6366f1;   /* brand       — focus ring                 */
+
+  /* ----------------------------------------------------------
+     Text scale (light mode)
+  ---------------------------------------------------------- */
+  --text-primary:         #111827;   /* neutral-900 — headings, important text   */
+  --text-secondary:       #374151;   /* neutral-700 — body text                  */
+  --text-muted:           #6b7280;   /* neutral-500 — supporting text            */
+  --text-subtle:          #9ca3af;   /* neutral-400 — placeholders, hints        */
+  --text-disabled:        #d1d5db;   /* neutral-300 — disabled state             */
+  --text-on-brand:        #ffffff;   /* white       — text on brand bg           */
+  --text-link:            #6366f1;   /* brand       — links                      */
+
+  /* ----------------------------------------------------------
+     Status colors — semantic, not decorative
+  ---------------------------------------------------------- */
+
+  /* success / merged */
+  --status-success-bg:    #f0fdf4;   /* green-50  */
+  --status-success-text:  #166534;   /* green-800 */
+  --status-success-border:#bbf7d0;   /* green-200 */
+  --status-success-dot:   #22c55e;   /* green-500 */
+
+  /* warning / needs review */
+  --status-warning-bg:    #fffbeb;   /* amber-50  */
+  --status-warning-text:  #92400e;   /* amber-800 */
+  --status-warning-border:#fde68a;   /* amber-200 */
+  --status-warning-dot:   #f59e0b;   /* amber-400 */
+
+  /* danger / stale / error */
+  --status-danger-bg:     #fef2f2;   /* red-50    */
+  --status-danger-text:   #991b1b;   /* red-800   */
+  --status-danger-border: #fecaca;   /* red-200   */
+  --status-danger-dot:    #ef4444;   /* red-400   */
+
+  /* info / open PR */
+  --status-info-bg:       #eff6ff;   /* blue-50   */
+  --status-info-text:     #1e40af;   /* blue-800  */
+  --status-info-border:   #bfdbfe;   /* blue-200  */
+  --status-info-dot:      #3b82f6;   /* blue-500  */
+
+  /* draft */
+  --status-draft-bg:      #f9fafb;   /* neutral-50  */
+  --status-draft-text:    #374151;   /* neutral-700 */
+  --status-draft-border:  #e5e7eb;   /* neutral-200 */
+  --status-draft-dot:     #9ca3af;   /* neutral-400 */
+
+  /* merged / purple accent */
+  --status-merged-bg:     #f5f3ff;   /* violet-50  */
+  --status-merged-text:   #5b21b6;   /* violet-800 */
+  --status-merged-border: #ddd6fe;   /* violet-200 */
+  --status-merged-dot:    #8b5cf6;   /* violet-500 */
+
+  /* ----------------------------------------------------------
+     PR review lag thresholds
+  ---------------------------------------------------------- */
+  --lag-good:             #22c55e;   /* ≤ 8h    — green  */
+  --lag-warn:             #f59e0b;   /* 8–24h   — amber  */
+  --lag-crit:             #ef4444;   /* > 24h   — red    */
+
+  /* ----------------------------------------------------------
+     Chart colors
+  ---------------------------------------------------------- */
+  --chart-bar-primary:    #6366f1;   /* merged bars      */
+  --chart-bar-secondary:  #a5b4fc;   /* opened bars      */
+  --chart-grid:           rgba(0, 0, 0, 0.06);
+  --chart-axis:           #9ca3af;
+  --chart-tooltip-bg:     #ffffff;
+  --chart-tooltip-border: #e5e7eb;
+
+  /* ----------------------------------------------------------
+     Nav
+  ---------------------------------------------------------- */
+  --nav-height:           52px;
+  --nav-bg:               #ffffff;
+  --nav-border:           #e5e7eb;
+  --nav-text:             #6b7280;
+  --nav-text-active:      #111827;
+  --nav-active-bg:        #f3f4f6;
+
+  /* ----------------------------------------------------------
+     Radius
+  ---------------------------------------------------------- */
+  --radius-sm:            4px;
+  --radius-md:            8px;
+  --radius-lg:            10px;
+  --radius-xl:            12px;
+  --radius-full:          9999px;
+
+  /* ----------------------------------------------------------
+     Shadows
+  ---------------------------------------------------------- */
+  --shadow-none:          none;
+  --shadow-sm:            0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md:            0 4px 6px -1px rgba(0, 0, 0, 0.07);
+
+  /* ----------------------------------------------------------
+     Spacing (used in component padding — reference only)
+  ---------------------------------------------------------- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+
+  /* ----------------------------------------------------------
+     Transitions
+  ---------------------------------------------------------- */
+  --transition-fast:      150ms ease;
+  --transition-base:      200ms ease;
+  --transition-slow:      300ms ease;
+
+  /* ----------------------------------------------------------
+     Z-index scale
+  ---------------------------------------------------------- */
+  --z-base:     0;
+  --z-above:    10;
+  --z-nav:      100;
+  --z-modal:    200;
+  --z-toast:    300;
+}
+
+/* ============================================================
+   DARK MODE OVERRIDES
+   Only override what changes — brand stays the same.
+   ============================================================ */
+
+.dark, [data-theme="dark"] {
+
+  /* surfaces */
+  --surface-page:         #0a0a0a;
+  --surface-card:         #111111;
+  --surface-raised:       #1a1a1a;
+  --surface-subtle:       #1f1f1f;
+  --surface-muted:        #2a2a2a;
+  --surface-overlay:      rgba(255, 255, 255, 0.04);
+
+  /* borders */
+  --border-default:       #262626;
+  --border-subtle:        #1f1f1f;
+  --border-strong:        #3f3f3f;
+
+  /* text */
+  --text-primary:         #fafafa;
+  --text-secondary:       #e5e5e5;
+  --text-muted:           #a3a3a3;
+  --text-subtle:          #737373;
+  --text-disabled:        #404040;
+
+  /* status — dark mode variants */
+  --status-success-bg:    #052e16;
+  --status-success-text:  #86efac;
+  --status-success-border:#14532d;
+
+  --status-warning-bg:    #1c1400;
+  --status-warning-text:  #fcd34d;
+  --status-warning-border:#713f12;
+
+  --status-danger-bg:     #1c0505;
+  --status-danger-text:   #fca5a5;
+  --status-danger-border: #7f1d1d;
+
+  --status-info-bg:       #0c1a2e;
+  --status-info-text:     #93c5fd;
+  --status-info-border:   #1e3a5f;
+
+  --status-draft-bg:      #1a1a1a;
+  --status-draft-text:    #a3a3a3;
+  --status-draft-border:  #2a2a2a;
+
+  --status-merged-bg:     #1e0a3c;
+  --status-merged-text:   #c4b5fd;
+  --status-merged-border: #3b1f6e;
+
+  /* charts */
+  --chart-grid:           rgba(255, 255, 255, 0.06);
+  --chart-axis:           #525252;
+  --chart-tooltip-bg:     #1a1a1a;
+  --chart-tooltip-border: #262626;
+
+  /* nav */
+  --nav-bg:               #111111;
+  --nav-border:           #1f1f1f;
+  --nav-text:             #737373;
+  --nav-text-active:      #fafafa;
+  --nav-active-bg:        #1f1f1f;
+}
+
+/* ============================================================
+   SYSTEM DARK MODE — auto-detect if no class is set
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface-page:         #0a0a0a;
+    --surface-card:         #111111;
+    --surface-raised:       #1a1a1a;
+    --surface-subtle:       #1f1f1f;
+    --surface-muted:        #2a2a2a;
+    --surface-overlay:      rgba(255, 255, 255, 0.04);
+
+    --border-default:       #262626;
+    --border-subtle:        #1f1f1f;
+    --border-strong:        #3f3f3f;
+
+    --text-primary:         #fafafa;
+    --text-secondary:       #e5e5e5;
+    --text-muted:           #a3a3a3;
+    --text-subtle:          #737373;
+    --text-disabled:        #404040;
+
+    --status-success-bg:    #052e16;
+    --status-success-text:  #86efac;
+    --status-success-border:#14532d;
+
+    --status-warning-bg:    #1c1400;
+    --status-warning-text:  #fcd34d;
+    --status-warning-border:#713f12;
+
+    --status-danger-bg:     #1c0505;
+    --status-danger-text:   #fca5a5;
+    --status-danger-border: #7f1d1d;
+
+    --status-info-bg:       #0c1a2e;
+    --status-info-text:     #93c5fd;
+    --status-info-border:   #1e3a5f;
+
+    --status-draft-bg:      #1a1a1a;
+    --status-draft-text:    #a3a3a3;
+    --status-draft-border:  #2a2a2a;
+
+    --status-merged-bg:     #1e0a3c;
+    --status-merged-text:   #c4b5fd;
+    --status-merged-border: #3b1f6e;
+
+    --chart-grid:           rgba(255, 255, 255, 0.06);
+    --chart-axis:           #525252;
+    --chart-tooltip-bg:     #1a1a1a;
+    --chart-tooltip-border: #262626;
+
+    --nav-bg:               #111111;
+    --nav-border:           #1f1f1f;
+    --nav-text:             #737373;
+    --nav-text-active:      #fafafa;
+    --nav-active-bg:        #1f1f1f;
+  }
+}
+
+/* ============================================================
+   BASE RESETS
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--surface-page);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ============================================================
+   TYPOGRAPHY SCALE
+   ============================================================ */
+
+h1 { font-size: 1.25rem;  font-weight: 600; color: var(--text-primary); line-height: 1.3; }
+h2 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); line-height: 1.35; }
+h3 { font-size: 1rem;     font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+h4 { font-size: 0.875rem; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+
+p  { color: var(--text-secondary); line-height: 1.6; }
+
+a {
+  color: var(--text-link);
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+a:hover { opacity: 0.8; }
+
+code, kbd, pre {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+/* ============================================================
+   COMPONENT PRIMITIVES
+   Ready-to-use classes — use these in Tailwind className strings
+   ============================================================ */
+
+/* Card */
+.card {
+  background: var(--surface-card);
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4) var(--space-5);
+}
+
+.card-subtle {
+  background: var(--surface-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* Stat card */
+.stat-card {
+  background: var(--surface-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* Badge base */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  border: 0.5px solid transparent;
+}
+
+.badge-open    { background: var(--status-info-bg);    color: var(--status-info-text);    border-color: var(--status-info-border); }
+.badge-merged  { background: var(--status-merged-bg);  color: var(--status-merged-text);  border-color: var(--status-merged-border); }
+.badge-draft   { background: var(--status-draft-bg);   color: var(--status-draft-text);   border-color: var(--status-draft-border); }
+.badge-stale   { background: var(--status-danger-bg);  color: var(--status-danger-text);  border-color: var(--status-danger-border); }
+.badge-closed  { background: var(--status-danger-bg);  color: var(--status-danger-text);  border-color: var(--status-danger-border); }
+.badge-success { background: var(--status-success-bg); color: var(--status-success-text); border-color: var(--status-success-border); }
+.badge-warning { background: var(--status-warning-bg); color: var(--status-warning-text); border-color: var(--status-warning-border); }
+.badge-ai      { background: var(--status-merged-bg);  color: var(--status-merged-text);  border-color: var(--status-merged-border); }
+
+/* Lag dot */
+.lag-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+.lag-dot-good { background: var(--lag-good); }
+.lag-dot-warn { background: var(--lag-warn); }
+.lag-dot-crit { background: var(--lag-crit); }
+
+/* Button base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+  white-space: nowrap;
+  user-select: none;
+}
+.btn:hover:not(:disabled) {
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  border-color: var(--brand-primary);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--brand-primary-hover);
+  border-color: var(--brand-primary-hover);
+  color: var(--text-on-brand);
+}
+
+/* Filter pill */
+.filter-pill {
+  font-size: 0.6875rem;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  border: 0.5px solid var(--border-default);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.filter-pill:hover {
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+.filter-pill.active {
+  background: var(--surface-subtle);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* WS indicator dot */
+.ws-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+.ws-dot-connected    { background: var(--lag-good); }
+.ws-dot-connecting   { background: var(--lag-warn); }
+.ws-dot-disconnected { background: var(--text-disabled); }
+
+/* Skeleton pulse */
+.skeleton {
+  background: var(--surface-muted);
+  border-radius: var(--radius-sm);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--brand-primary);
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Scrollbar (webkit) */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text-disabled); }
+
+/* Selection */
+::selection {
+  background: var(--brand-primary-light);
+  color: var(--brand-primary-dark);
+}

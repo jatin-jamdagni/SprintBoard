@@ -1,0 +1,32 @@
+{
+  "name": "@repo/config",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/server.ts",
+    "./env": "./src/server.ts",
+    "./client": "./src/client.ts",
+    "./schema": "./src/schema.ts"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "dev": "echo 'config: no dev server'",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/bun": "latest",
+    "bun-types": "^1.3.12",
+    "@repo/typescript-config": "workspace:*"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "zod": "^4.3.6"
+  }
+}

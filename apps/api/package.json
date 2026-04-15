@@ -2,7 +2,7 @@
   "name": "@repo/api",
   "version": "1.0.50",
   "scripts": {
-    "dev": "bun --env-file=../../.env run --hot src/index.ts",
+    "dev": "bun run --hot src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target bun",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src"
@@ -10,11 +10,12 @@
   "dependencies": {
     "@elysiajs/cors": "^1.4.1",
     "@elysiajs/openapi": "^1.4.14",
+    "@repo/config": "workspace:*",
     "@repo/types": "workspace:*",
     "elysia": "latest",
     "@repo/db": "workspace:*",
-    "@repo/github": "workspace:*"
-
+    "@repo/github": "workspace:*",
+    "@repo/ai": "workspace:*"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

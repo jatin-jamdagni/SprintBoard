@@ -1,86 +1,56 @@
-import {
-    createRootRoute,
-    Link,
-    Outlet
-} from "@tanstack/react-router";
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 export const Route = createRootRoute({
-    component: Root,
+  component: Root,
 });
 
 function Root() {
-    return (
-        <>
-            <div
-                style={{
-                    fontFamily: "system-ui, -apple-system, sans-serif",
-                    minHeight: "100vh",
-                    background: "var(--color-background-tertiary, #f9fafb)",
-                }}
+  const navLinkBase =
+    "text-[13px] px-3 py-1.5 rounded-lg no-underline transition-colors";
+  const navLinkDefault =
+    "text-[var(--nav-text)] hover:text-[var(--nav-text-active)] hover:bg-[var(--nav-active-bg)]";
+  const navLinkActive =
+    "font-medium text-[var(--nav-text-active)] bg-[var(--nav-active-bg)]";
+
+  return (
+    <>
+      <div className="min-h-screen bg-[var(--surface-page)] font-sans">
+        <nav className="h-[var(--nav-height)] border-b border-[var(--nav-border)] bg-[var(--nav-bg)] flex items-center gap-6 px-4 sm:px-6 sticky top-0 z-10">
+          <span className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
+            ⚡ SprintBoard
+          </span>
+
+          <div className="flex items-center gap-1">
+            <Link
+              to="/"
+              className={`${navLinkBase} ${navLinkDefault}`}
+              activeProps={{ className: `${navLinkBase} ${navLinkActive}` }}
+              activeOptions={{ exact: true }}
             >
-                <nav
-                    style={{
-                        height: 52,
-                        borderBottom: "0.5px solid var(--color-border-tertiary)",
-                        background: "var(--color-background-primary)",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 24,
-                        padding: "0 24px",
-                        position: "sticky",
-                        top: 0,
-                        zIndex: 10,
-                    }}
-                >
-                    <span style={{ fontWeight: 600, fontSize: 15, color: "var(--color-text-primary)" }}>
-                        ⚡ SprintBoard
-                    </span>
+              Dashboard
+            </Link>
+            <Link
+              to="/standup"
+              className={`${navLinkBase} ${navLinkDefault}`}
+              activeProps={{ className: `${navLinkBase} ${navLinkActive}` }}
+            >
+              Standup
+            </Link>
+          </div>
 
-                    <Link
-                        to="/"
-                        style={{ fontSize: 13, color: "var(--color-text-secondary)", textDecoration: "none" }}
-                        activeProps={{
-                            style: {
-                                fontSize: 13,
-                                color: "var(--color-text-primary)",
-                                fontWeight: 500,
-                                textDecoration: "none",
-                            },
-                        }}
-                        activeOptions={{ exact: true }}
-                    >
-                        Dashboard
-                    </Link>
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-[11px] text-[var(--text-subtle)] hidden sm:block">
+              workspace · 1
+            </span>
+          </div>
+        </nav>
 
-                    <Link
-                        to="/standup"    
-                        style={{ fontSize: 13, color: "var(--color-text-secondary)", textDecoration: "none" }}
-                        activeProps={{
-                            style: {
-                                fontSize: 13,
-                                color: "var(--color-text-primary)",
-                                fontWeight: 500,
-                                textDecoration: "none",
-                            },
-                        }}
-                    >
-                        Standup
-                    </Link>
-                </nav>
-
-                <main
-                    style={{
-                        maxWidth: 1000,
-                        margin: "0 auto",
-                        padding: "28px 24px",
-                    }}
-                >
-                    <Outlet />
-                </main>
-            </div>
-            <TanStackRouterDevtools />
-        </>
-
-    );
+        <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-7">
+          <Outlet />
+        </main>
+      </div>
+      <TanStackRouterDevtools />
+    </>
+  );
 }

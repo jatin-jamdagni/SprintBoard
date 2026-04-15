@@ -1,47 +1,16 @@
-function SkeletonLine({ width = "100%", height = 12 }: { width?: string; height?: number }) {
-  return (
-    <div
-      style={{
-        width,
-        height,
-        borderRadius: 4,
-        background: "var(--color-background-secondary)",
-      }}
-    />
-  );
-}
-
 function SkeletonCard() {
   return (
-    <div
-      style={{
-        border: "0.5px solid var(--color-border-tertiary)",
-        borderRadius: 10,
-        padding: "12px 14px",
-        display: "flex",
-        flexDirection: "column",
-        gap: 10,
-      }}
-    >
-      <div style={{ display: "flex", gap: 10 }}>
-        <div
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: "50%",
-            background: "var(--color-background-secondary)",
-            flexShrink: 0,
-          }}
-        />
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
-          <SkeletonLine width="70%" height={13} />
-          <SkeletonLine width="40%" height={10} />
+    <div className="card p-3.5 animate-pulse">
+      <div className="flex gap-2.5 mb-3">
+        <div className="w-7 h-7 rounded-full bg-[var(--surface-muted)] shrink-0" />
+        <div className="flex-1 space-y-2">
+          <div className="h-3 bg-[var(--surface-muted)] rounded w-2/3" />
+          <div className="h-2.5 bg-[var(--surface-muted)] rounded w-1/3" />
         </div>
       </div>
-      <SkeletonLine height={1} />
-      <div style={{ display: "flex", gap: 12 }}>
-        <SkeletonLine width="25%" height={10} />
-        <SkeletonLine width="15%" height={10} />
+      <div className="border-t border-[var(--border-subtle)] pt-2 flex gap-3">
+        <div className="h-2.5 bg-[var(--surface-muted)] rounded w-1/4" />
+        <div className="h-2.5 bg-[var(--surface-muted)] rounded w-1/6" />
       </div>
     </div>
   );
@@ -49,10 +18,8 @@ function SkeletonCard() {
 
 export function PRListSkeleton({ count = 4 }: { count?: number }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      {Array.from({ length: count }).map((_, i) => (
-        <SkeletonCard key={i} />
-      ))}
+    <div className="flex flex-col gap-2">
+      {Array.from({ length: count }).map((_, i) => <SkeletonCard key={i} />)}
     </div>
   );
 }
