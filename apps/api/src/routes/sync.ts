@@ -1,86 +1,26 @@
-import { env } from "@repo/config/server";
-import { getWorkspaceById, upsertPR } from "@repo/db";
-import { createGitHubClient, fetchPullRequests, fetchRateLimit } from "@repo/github";
-import Elysia from "elysia";
+import { Elysia } from "elysia";
+import { createGitHubClient, fetchRateLimit } from "@repo/github";
+import { config } from "@repo/config";
+import { syncWorkspace } from "../services/sync.service";
 
+export const syncRoutes = new Elysia({ prefix: "/api/sync" })
+  .post("/workspace/:workspaceId", async ({ params, set }) => {
+    try {
+      const result = await syncWorkspace(Number(params.workspaceId));
+      return { success: true, data: result };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Sync failed";
+      const lowerMessage = message.toLowerCase();
 
-
-
-function getGithubClient() {
-    return createGitHubClient({ token: env.GITHUB_TOKEN });
-}
-
-
-export const syncRoutes = new Elysia({
-    prefix: "/api/sync"
-})
-    .post("/workspace/:workspaceId", async ({ params, set }) => {
-
-        const workspaceId = Number(params.workspaceId);
-
-        const workspace = await getWorkspaceById(workspaceId);
-
-        if (!workspace) {
-            set.status = 404;
-
-            return {
-                success: false,
-                error: "Workspace not found"
-            }
-        }
-
-        const client = getGithubClient();
-
-        const [owner, repo] = workspace.githubRepo.includes("/") ? workspace.githubRepo.split("/") : [workspace.githubOrg, workspace.githubRepo];
-
-        if (!owner || !repo) {
-            set.status = 400
-            return {
-                success: false, error: "Invalid github_repo format"
-            }
-        }
-
-        console.log(`[sync] Fetching PRs for ${owner}/${repo}...`)
-
-        const result = await fetchPullRequests({
-            client,
-            owner,
-            repo,
-            workspaceId,
-            state: "all",
-            perPage: 50
-        })
-
-        const upserted = await Promise.all(
-            result.prs.map((pr) =>
-                upsertPR({
-                    ...pr,
-                    openedAt: new Date(pr.openedAt),
-                    mergedAt: pr.mergedAt ? new Date(pr.mergedAt) : null,
-                    firstReviewAt: pr.firstReviewAt ? new Date(pr.firstReviewAt) : null
-                })
-            )
-        );
-
-        console.log(`[sync] Upsetted ${upserted.length} PRs`);
-
-        return {
-            success: true,
-            data: {
-                synced: upserted.length,
-                rateLimitRemaining: result.rateLimitRemaining,
-                fetchedAt: result.fetchedAt
-            }
-        }
-    })
-
-
-    .get("/rate-limit", async () => {
-        const client = getGithubClient();
-
-        const data = await fetchRateLimit(client);
-        return {
-            success: true,
-            data
-        }
-    })
+      set.status = lowerMessage.includes("not found") ? 404 : 500;
+      return  {
+        success: false,
+        error: message,
+      }
+    }
+  })
+  .get("/rate-limit", async () => {
+    const client = createGitHubClient({ token: config.GITHUB_TOKEN });
+    const data = await fetchRateLimit(client);
+    return { success: true, data };
+  });

@@ -24,6 +24,8 @@ export const serverConfigSchema = z.object({
     GITHUB_ORG: z.string().min(1, "GITHUB_ORG is required"),
     GITHUB_REPO: z.string().min(1, "GITHUB_REPO is required"),
     GITHUB_POLL_INTERVAL_MS: z.coerce.number().default(5 * 60 * 1000),
+    GITHUB_WEBHOOK_SECRET: z.string().optional(),
+
 
     // anthropic
     ANTHROPIC_API_KEY: optionalSecret,

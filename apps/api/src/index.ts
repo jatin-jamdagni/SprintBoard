@@ -7,6 +7,9 @@ import { workspaceRoutes } from "./routes/workspaces";
 import { prRoutes } from "./routes/pull-requests";
 import { syncRoutes } from "./routes/sync";
 import { summaryRoutes } from "./routes/summaries";
+import { webhookRoutes } from "./routes/webhooks";
+import { cronPlugin } from "./plugins/cron.plugin";
+import { config } from "@repo/config";
 
 const app = new Elysia()
   .use(cors({
@@ -22,11 +25,13 @@ const app = new Elysia()
     }
   })
   )
+  .use(cronPlugin)
   .use(healthRoutes)
   .use(workspaceRoutes)
   .use(prRoutes)
   .use(syncRoutes)
   .use(summaryRoutes)
+  .use(webhookRoutes)
   .onError(({ error, code, set }) => {
     if (code !== "NOT_FOUND") {
       console.error(`[${code}]`, error);
@@ -44,6 +49,7 @@ const app = new Elysia()
 
 console.log(`🚀 API → http://localhost:${app.server?.port}`);
 console.log(`📖 Docs → http://localhost:${app.server?.port}/openapi`);
-
+console.log(`⏰ Cron     → ${config.NODE_ENV === "development" ? "every 1 min" : "every 5 min"}`);
+console.log(`🌍 Env      → ${config.NODE_ENV}`);
 
 export type App = typeof app;

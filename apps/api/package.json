@@ -9,13 +9,15 @@
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.1",
+    "@elysiajs/cron": "^1.4.1",
+    "@elysiajs/node": "^1.4.5",
     "@elysiajs/openapi": "^1.4.14",
+    "@repo/ai": "workspace:*",
     "@repo/config": "workspace:*",
-    "@repo/types": "workspace:*",
-    "elysia": "latest",
     "@repo/db": "workspace:*",
     "@repo/github": "workspace:*",
-    "@repo/ai": "workspace:*"
+    "@repo/types": "workspace:*",
+    "elysia": "latest"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
