@@ -21,4 +21,13 @@ export const syncApi = {
 
   getRateLimit: () =>
     apiFetch<RateLimit>("/api/sync/rate-limit"),
+
+  computeSnapshots: (workspaceId: number)=>
+    apiFetch<{computed: number}>(
+      `/api/sync/workspace/${workspaceId}/snapshots`, {
+        method: "POST"
+      }
+    )
 };
+
+

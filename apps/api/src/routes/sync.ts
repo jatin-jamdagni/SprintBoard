@@ -4,6 +4,7 @@ import { getRateLimitState } from "@repo/cache";
 import { config } from "@repo/config";
 import { syncWorkspace } from "../services/sync.service";
 import { authPlugin, requireAuth } from "../plugins/auth.plugin";
+import { computeSnapshotsForWorkspace } from "../services/snapshot.service";
 
 export const syncRoutes = new Elysia({ prefix: "/api/sync" })
   .use(authPlugin)
@@ -32,4 +33,27 @@ export const syncRoutes = new Elysia({ prefix: "/api/sync" })
     const client = createGitHubClient({ token: config.GITHUB_TOKEN });
     const data = await fetchRateLimit(client);
     return { success: true, data };
-  });
+  })
+
+  .post("/workspace/:workspaceId/snapshots", async ({ params, auth, set }) => {
+
+
+
+    requireAuth(auth);
+
+    const id = Number(params.workspaceId);
+
+    if (id !== auth.user.workspaceId) {
+      set.status = 403
+      return { success: false, error: "Forbidden" }
+    }
+
+    const computed = await computeSnapshotsForWorkspace(id, 30);
+
+    return {
+      success: true,
+      data: {
+        computed
+      }
+    }
+  })

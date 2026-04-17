@@ -7,6 +7,7 @@ import {
   cacheDel,
   CacheKeys,
 } from "@repo/cache";
+import { computeSnapshotsForWorkspace } from "./snapshot.service";
 
 function buildGitHubClient() {
   return createGitHubClient({ token: config.GITHUB_TOKEN });
@@ -61,6 +62,10 @@ export async function syncWorkspace(workspaceId: number): Promise<SyncWorkspaceR
 
   await cacheInvalidatePattern(`db:prs:workspace:${workspaceId}*`);
   await cacheInvalidatePattern(`db:snapshots:workspace:${workspaceId}*`);
+
+  await computeSnapshotsForWorkspace(workspaceId, 7).catch((err) =>
+    console.log("[sync] snapshot computation failed", err)
+  )
 
   wsBroker.broadcast(workspaceId, {
     type: "pr.synced",

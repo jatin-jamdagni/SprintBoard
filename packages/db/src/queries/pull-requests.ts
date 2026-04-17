@@ -53,17 +53,43 @@ export async function upsertPR(data: InsertPullRequestRow) {
         pullRequests.prNumber,
       ],
       set: {
-        title:         data.title,
-        status:        data.status,
-        isDraft:       data.isDraft,
-        mergedAt:      data.mergedAt,
+        title: data.title,
+        status: data.status,
+        isDraft: data.isDraft,
+        mergedAt: data.mergedAt,
         firstReviewAt: data.firstReviewAt,
-        reviewCount:   data.reviewCount,
-        additions:     data.additions,
-        deletions:     data.deletions,
-        updatedAt:     new Date(),
+        reviewCount: data.reviewCount,
+        additions: data.additions,
+        deletions: data.deletions,
+        updatedAt: new Date(),
       },
     })
     .returning();
   return result[0]!;
 }
+
+
+export async function getPRById(id: number) {
+
+  const result = await db.select()
+    .from(pullRequests)
+    .where(eq(pullRequests.id, id))
+    .limit(1);
+
+
+  return result[0] ?? null;
+}
+
+export async function getPRByNumber(workspaceId: number, prNumber: number) {
+
+  const result = await db.select()
+    .from(pullRequests)
+    .where(and(
+      eq(pullRequests.workspaceId, workspaceId),
+      eq(pullRequests.prNumber, prNumber)
+    ))
+    .limit(1);
+
+  return result[0] ?? null;
+}
+

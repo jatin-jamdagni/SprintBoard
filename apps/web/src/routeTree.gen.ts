@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StandupRouteImport } from './routes/standup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PrsPrNumberRouteImport } from './routes/prs.$prNumber'
 
 const StandupRoute = StandupRouteImport.update({
   id: '/standup',
@@ -28,35 +29,44 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrsPrNumberRoute = PrsPrNumberRouteImport.update({
+  id: '/prs/$prNumber',
+  path: '/prs/$prNumber',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/standup': typeof StandupRoute
+  '/prs/$prNumber': typeof PrsPrNumberRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/standup': typeof StandupRoute
+  '/prs/$prNumber': typeof PrsPrNumberRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/standup': typeof StandupRoute
+  '/prs/$prNumber': typeof PrsPrNumberRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/standup'
+  fullPaths: '/' | '/login' | '/standup' | '/prs/$prNumber'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/standup'
-  id: '__root__' | '/' | '/login' | '/standup'
+  to: '/' | '/login' | '/standup' | '/prs/$prNumber'
+  id: '__root__' | '/' | '/login' | '/standup' | '/prs/$prNumber'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   StandupRoute: typeof StandupRoute
+  PrsPrNumberRoute: typeof PrsPrNumberRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/prs/$prNumber': {
+      id: '/prs/$prNumber'
+      path: '/prs/$prNumber'
+      fullPath: '/prs/$prNumber'
+      preLoaderRoute: typeof PrsPrNumberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   StandupRoute: StandupRoute,
+  PrsPrNumberRoute: PrsPrNumberRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
