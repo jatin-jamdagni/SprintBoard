@@ -19,16 +19,15 @@ export function getRedisClient(): Redis {
     instance.on("error", (err) => console.error("[redis] error", err.message));
     instance.on("close", () => console.warn("[redis] connection closed"));
     instance.on("reconnecting", () => console.log("[redis] reconnecting..."));
-
+    
     return instance;
 
 }
 
-export async function disconnectRedis(): Promise<void> {
+export async function disconnectRedisexi(): Promise<void> {
     if (instance) {
         await instance.quit();
         instance = null
     }
 }
-
 

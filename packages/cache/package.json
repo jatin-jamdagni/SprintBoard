@@ -7,7 +7,9 @@
   "types": "./src/index.ts",
   "scripts": {
     "dev": "echo 'cache: no dev server'",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@types/bun": "latest",

@@ -8,6 +8,8 @@
   "scripts": {
     "dev": "echo 'github: no dev server'",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:fetch": "bun run src/test-fetch.ts"
   },
   "dependencies": {
