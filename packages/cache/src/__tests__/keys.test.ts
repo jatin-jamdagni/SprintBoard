@@ -33,6 +33,7 @@ describe("CacheKeys", () => {
   });
 });
 
+
 describe("CacheTTL", () => {
   it("all TTLs are positive numbers", () => {
     Object.values(CacheTTL).forEach((ttl) => {
@@ -44,3 +45,8 @@ describe("CacheTTL", () => {
     expect(CacheTTL.DB_PRS).toBeLessThan(CacheTTL.GITHUB_PRS);
   });
 });
+
+
+describe("", () => {
+
+})
