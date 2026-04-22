@@ -14,11 +14,13 @@ import { config } from "@repo/config";
 import { wsRoutes } from "./routes/ws";
 
 import { getRedisClient, disconnectRedis } from "@repo/cache";
+import { captureException, initSentry } from "./lib/sentry";
+import { logger } from "@repo/logger";
 
 
 
 
-
+initSentry();
 getRedisClient();
 
 const app = new Elysia()
@@ -46,38 +48,51 @@ const app = new Elysia()
   .use(wsRoutes)
 
   .onError(({ error, code, set }) => {
-    if (error instanceof Error && error.message === "UNAUTHORIZED") {
-      set.status = 403;
-      return {
-        success: false as const,
-        error: "Forbidden",
-      };
+    const message = error instanceof Error ? error.message : String(error);
+    if (message === "UNAUTHORIZED" || code === "UNAUTHORIZED") {
+      set.status = 401;
+      return { success: false, error: "Not authenticated" };
     }
+    logger.error({ err: error, code }, "unhandled error");
+    captureException(error, { code });
 
     if (code !== "NOT_FOUND") {
-      console.error(`[${code}]`, error);
+      captureException(error, { code });
+
     }
-
     set.status = code === "NOT_FOUND" ? 404 : 500;
-    return {
-      success: false as const,
-      error: error instanceof Error ? error.message : "Unknown error",
+    return { success: false as const, error: message };
 
-    };
   })
   .listen(env.API_PORT);
 
+logger.info({
+  port: app.server?.port,
+  env: config.NODE_ENV,
+  cron: config.NODE_ENV === "development" ? "every 1 min" : "every 5 min",
+}, "SprintBoard API started");
 
-console.log(`🚀 API → http://localhost:${app.server?.port}`);
-console.log(`🔌 WS  → ws://localhost:${app.server?.port}/ws`);
+process.on("SIGINT", async () => {
+  logger.info("shutting down");
+  await disconnectRedis();
+  process.exit(0);
+});
+process.on("SIGTERM", async () => {
+  logger.info("shutting down");
+  await disconnectRedis();
+  process.exit(0);
+});
 
-console.log(`📖 Docs → http://localhost:${app.server?.port}/openapi`);
-console.log(`⏰ Cron → ${config.NODE_ENV === "development" ? "every 1 min" : "every 5 min"}`);
-console.log(`🌍 Env  → ${config.NODE_ENV}`);
+process.on("uncaughtException", (err) => {
+  logger.fatal({ err }, "uncaught exception");
+  captureException(err);
+  process.exit(1);
+});
 
-
-
-process.on("SIGINT", async () => { await disconnectRedis(); process.exit(0); });
-process.on("SIGTERM", async () => { await disconnectRedis(); process.exit(0); });
+process.on("unhandledRejection", (reason) => {
+  logger.fatal({ reason }, "unhandled rejection");
+  captureException(reason);
+  process.exit(1);
+});
 
 export type App = typeof app;

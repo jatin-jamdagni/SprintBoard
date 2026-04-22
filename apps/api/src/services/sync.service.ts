@@ -8,6 +8,10 @@ import {
   CacheKeys,
 } from "@repo/cache";
 import { computeSnapshotsForWorkspace } from "./snapshot.service";
+import { logger } from "@repo/logger";
+
+
+const log = logger.child({ module: "sync" });
 
 function buildGitHubClient() {
   return createGitHubClient({ token: config.GITHUB_TOKEN });
@@ -31,13 +35,19 @@ export type SyncWorkspaceResult = {
 };
 
 export async function syncWorkspace(workspaceId: number): Promise<SyncWorkspaceResult> {
+
+
+
   const workspace = await getWorkspaceById(workspaceId);
   if (!workspace) throw new Error(`Workspace ${workspaceId} not found`);
 
   const { owner, repo } = splitRepo(workspace);
   const client = buildGitHubClient();
 
-  console.log(`[sync] workspace=${workspaceId} repo=${owner}/${repo}`);
+  // console.log(`[sync] workspace=${workspaceId} repo=${owner}/${repo}`);
+
+  log.info({ workspaceId, repo: `${owner}/${repo}` }, "syncing workspace")
+
 
   const result = await fetchPullRequests({
     client,
@@ -64,7 +74,8 @@ export async function syncWorkspace(workspaceId: number): Promise<SyncWorkspaceR
   await cacheInvalidatePattern(`db:snapshots:workspace:${workspaceId}*`);
 
   await computeSnapshotsForWorkspace(workspaceId, 7).catch((err) =>
-    console.log("[sync] snapshot computation failed", err)
+    // console.log("[sync] snapshot computation failed", err)
+    log.error({ err }, "snapshot computation failed")
   )
 
   wsBroker.broadcast(workspaceId, {
@@ -73,7 +84,8 @@ export async function syncWorkspace(workspaceId: number): Promise<SyncWorkspaceR
     synced: upserted.length,
   });
 
-  console.log(`[sync] upserted=${upserted.length} fromCache=${result.fromCache} rateLimitRemaining=${result.rateLimitRemaining}`);
+  // console.log(`[sync] upserted=${upserted.length} fromCache=${result.fromCache} rateLimitRemaining=${result.rateLimitRemaining}`);
+  log.info({ upserted: upserted.length, rateLimitRemaining: result.rateLimitRemaining }, "sync complete");
 
   return {
     workspaceId,
@@ -86,7 +98,9 @@ export async function syncWorkspace(workspaceId: number): Promise<SyncWorkspaceR
 
 export async function syncAllWorkspaces(): Promise<SyncWorkspaceResult[]> {
   const workspaces = await getAllWorkspaces();
-  console.log(`[cron] syncing ${workspaces.length} workspace(s)`);
+  // console.log(`[cron] syncing ${workspaces.length} workspace(s)`);
+  log.info(workspaces.length, "Syncing all workspaces");
+
 
   const results = await Promise.allSettled(
     workspaces.map((ws) => syncWorkspace(ws.id))
@@ -109,7 +123,9 @@ export async function syncSinglePR(
 
   const pr = await fetchSinglePR({ client, owner, repo, prNumber, workspaceId });
   if (!pr) {
-    console.warn(`[sync] PR #${prNumber} not found in ${owner}/${repo}`);
+    // console.warn(`[sync] PR #${prNumber} not found in ${owner}/${repo}`);
+    log.warn({ prNumber, owner, repo }, "PR not found");
+
     return;
   }
 
@@ -129,5 +145,8 @@ export async function syncSinglePR(
     repo: saved.repo,
   });
 
-  console.log(`[sync] upserted PR #${prNumber} workspace=${workspaceId}`);
+  // console.log(`[syånc] upserted PR #${prNumber} workspace=${workspaceId}`);
+
+  log.info({ workspaceId, prNumber, owner, repo }, "PR upserted");
+
 }

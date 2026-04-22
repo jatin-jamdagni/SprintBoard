@@ -1,11 +1,14 @@
 import { randomBytes } from "crypto";
 import { config } from "@repo/config";
+import { logger } from "@repo/logger";
 import {
   upsertUser,
   createSession,
   createWorkspace,
   getAllWorkspaces,
 } from "@repo/db";
+
+const log = logger.child({ module: "auth" });
 
 const GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize";
 const GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token";
@@ -135,6 +138,8 @@ export async function createUserSession(
     workspaceId,
     expiresAt,
   });
+
+  log.info({ githubLogin: githubUser.login }, "user authenticated");
 
   return { sessionId, expiresAt, workspaceId };
 }

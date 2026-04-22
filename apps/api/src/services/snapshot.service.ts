@@ -1,12 +1,13 @@
 import { computeSnapshotForDate, getAllWorkspaces, upsertSnapshot } from "@repo/db";
+import { logger } from "@repo/logger";
 
-
-
+const log = logger.child({ module: "snapshots" });
 
 export async function computeSnapshotsForWorkspace(
     workspaceId: number,
     daysBack = 7
 ): Promise<number> {
+    log.info({ workspaceId, days: daysBack }, "computing snapshots");
 
     const dates: string[] = [];
 
@@ -27,7 +28,7 @@ export async function computeSnapshotsForWorkspace(
         computed++;
     }
 
-    console.log(`[snapshots] workspace=${workspaceId} computed=${computed} days`);
+    log.info({ workspaceId, computed }, "snapshots done");
 
     return computed;
 }
@@ -35,11 +36,11 @@ export async function computeSnapshotsForWorkspace(
 
 export async function computeSnapshotsForAllWorkspaces(): Promise<void> {
     const workspaces = await getAllWorkspaces();
-    console.log(`[snapshots] computing for ${workspaces.length} workspace(s)`);
+    log.info({ workspaces: workspaces.length }, "computing snapshots for all workspaces");
 
     await Promise.allSettled(
         workspaces.map((ws) => computeSnapshotsForWorkspace(ws.id, 7))
     )
 
-    console.log("[snapshots] all done")
+    log.info("all snapshots done");
 }

@@ -29,6 +29,7 @@
         "@repo/config": "workspace:*",
         "@repo/db": "workspace:*",
         "@repo/github": "workspace:*",
+        "@repo/logger": "workspace:*",
         "@repo/types": "workspace:*",
         "@sentry/bun": "^10.49.0",
         "elysia": "latest",
@@ -49,6 +50,7 @@
         "@repo/api-client": "workspace:*",
         "@repo/config": "workspace:*",
         "@repo/types": "workspace:*",
+        "@sentry/bun": "^10.49.0",
         "@sentry/react": "^10.49.0",
         "@sentry/vite-plugin": "^5.2.0",
         "@tailwindcss/vite": "^4.2.2",
@@ -187,10 +189,11 @@
       },
     },
     "packages/logger": {
-      "name": "logger",
+      "name": "@repo/logger",
       "dependencies": {
         "@repo/config": "workspace:*",
         "pino": "^10.3.1",
+        "pino-pretty": "^13.1.3",
       },
       "devDependencies": {
         "@repo/typescript-config": "workspace:*",
@@ -516,6 +519,8 @@
     "@repo/eslint-config": ["@repo/eslint-config@workspace:packages/eslint-config"],
 
     "@repo/github": ["@repo/github@workspace:packages/github"],
+
+    "@repo/logger": ["@repo/logger@workspace:packages/logger"],
 
     "@repo/types": ["@repo/types@workspace:packages/types"],
 
@@ -1164,8 +1169,6 @@
     "lodash.isarguments": ["lodash.isarguments@3.1.0", "", {}, "sha512-chi4NHZlZqZD18a0imDHnZPrDeBbTtVN7GXMwuGdRH9qotxAjYs3aVLKc7zNOG9eddR5Ksd8rvFEBc9SsggPpg=="],
 
     "lodash.merge": ["lodash.merge@4.6.2", "", {}, "sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ=="],
-
-    "logger": ["logger@workspace:packages/logger"],
 
     "loose-envify": ["loose-envify@1.4.0", "", { "dependencies": { "js-tokens": "^3.0.0 || ^4.0.0" }, "bin": { "loose-envify": "cli.js" } }, "sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q=="],
 

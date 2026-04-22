@@ -44,6 +44,10 @@ export const serverConfigSchema = z.object({
     // redis (optional until Day 9)
     REDIS_URL: z.string().default("redis://localhost:6379"),
 
+    SENTRY_DSN_API: z.string().optional(),
+    SENTRY_DSN_WEB: z.string().optional(),
+    SENTRY_ENVIRONMENT: z.string().default("development"),
+
 })
 
 export type ServerConfig = z.infer<typeof serverConfigSchema>;

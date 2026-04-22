@@ -24,10 +24,9 @@ export function getRedisClient(): Redis {
 
 }
 
-export async function disconnectRedisexi(): Promise<void> {
+export async function disconnectRedis(): Promise<void> {
     if (instance) {
         await instance.quit();
         instance = null
     }
 }
-

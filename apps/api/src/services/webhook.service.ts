@@ -1,6 +1,9 @@
 import { getAllWorkspaces } from "@repo/db";
+import { logger } from "@repo/logger";
 import { syncSinglePR } from "./sync.service";
 import type { GitHubPRPayload, GitHubReviewPayload } from "../lib/webhook-types";
+
+const log = logger.child({ module: "webhook" });
 
 const SYNC_ACTIONS = new Set([
   "opened",
@@ -24,17 +27,15 @@ async function findWorkspaceByRepo(fullName: string): Promise<number | null> {
 
 export async function handlePREvent(payload: GitHubPRPayload): Promise<void> {
   const { action, number: prNumber, repository } = payload;
+  log.info({ action, prNumber, repo: repository.full_name }, "PR event");
 
   if (!SYNC_ACTIONS.has(action)) {
-    console.log(`[webhook] skipping PR action="${action}" pr=#${prNumber}`);
     return;
   }
 
-  console.log(`[webhook] PR action="${action}" pr=#${prNumber} repo=${repository.full_name}`);
-
   const workspaceId = await findWorkspaceByRepo(repository.full_name);
   if (!workspaceId) {
-    console.warn(`[webhook] no workspace found for repo=${repository.full_name}`);
+    log.warn({ repo: repository.full_name }, "no workspace for repo");
     return;
   }
 
@@ -42,13 +43,12 @@ export async function handlePREvent(payload: GitHubPRPayload): Promise<void> {
 }
 
 export async function handleReviewEvent(payload: GitHubReviewPayload): Promise<void> {
-  const { pull_request, repository } = payload;
-
-  console.log(`[webhook] review submitted pr=#${pull_request.number} repo=${repository.full_name}`);
+  const { action, pull_request, repository } = payload;
+  log.info({ action, prNumber: pull_request.number }, "review event");
 
   const workspaceId = await findWorkspaceByRepo(repository.full_name);
   if (!workspaceId) {
-    console.warn(`[webhook] no workspace found for repo=${repository.full_name}`);
+    log.warn({ repo: repository.full_name }, "no workspace for repo");
     return;
   }
 

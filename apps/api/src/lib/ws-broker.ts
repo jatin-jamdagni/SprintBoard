@@ -1,5 +1,7 @@
 import { WSMessage } from "@repo/types";
+import { logger } from "@repo/logger";
 
+const log = logger.child({ module: "ws" });
 
 type WSClient = {
     id: string;
@@ -21,10 +23,10 @@ class WSBroker {
 
         this.rooms.set(client.workspaceId, room);
 
-        console.log(
-            `[ws] connected id=${client.id} workspace=${client.workspaceId} ` +
-            `total=${this.clients.size}`
-        )
+        log.info(
+            { clientId: client.id, workspaceId: client.workspaceId, total: this.clients.size },
+            "client connected"
+        );
     }
 
 
@@ -41,10 +43,7 @@ class WSBroker {
             if (room.size === 0) this.rooms.delete(client.workspaceId);
         }
 
-        console.log(
-            `[ws] disconnected id=${clientId} workspace=${client.workspaceId} ` +
-            `total=${this.clients.size}`
-        );
+        log.info({ clientId, total: this.clients.size }, "client disconnected");
     }
 
     broadcast(workspaceId: number, message: WSMessage): void {
@@ -75,7 +74,7 @@ class WSBroker {
         stale.forEach((id) => this.unregister(id));
 
         if (sent > 0) {
-            console.log(`[ws] broadcast type=${message.type} workspace=${workspaceId} clients=${sent}`);
+            log.info({ type: message.type, workspaceId, clients: sent }, "broadcast");
         }
 
     }
